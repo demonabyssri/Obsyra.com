@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --phantom-light-primary: 0 0% 100%; /* Blanco para fondos */
+    --phantom-dark-text: 220 20% 10%; /* Negro muy oscuro para texto */
+    --phantom-gray-border: 220 15% 88%; /* Gris claro para bordes */
+    --phantom-blue-accent: 220 70% 50%; /* Azul oscuro sutil para acentos */
+    --phantom-blue-hover: 220 70% 40%; /* Azul más oscuro para hover */
+    --phantom-gray-card: 0 0% 98%; /* Gris muy claro para fondos de tarjetas */
+    --phantom-text-muted: 220 10% 45%; /* Gris para texto silenciado */
+
+    --background: var(--phantom-light-primary);
+    --foreground: var(--phantom-dark-text);
+    
+    --card: var(--phantom-gray-card);
+    --card-foreground: var(--phantom-dark-text);
+    
+    --popover: var(--phantom-light-primary);
+    --popover-foreground: var(--phantom-dark-text);
+    
+    --primary: var(--phantom-blue-accent);
+    --primary-foreground: 0 0% 100%; /* Texto blanco sobre azul */
+    
+    --secondary: 220 15% 95%; /* Gris más claro para elementos secundarios */
+    --secondary-foreground: var(--phantom-dark-text);
+    
+    --muted: var(--phantom-text-muted);
+    --muted-foreground: var(--phantom-text-muted);
+    
+    --accent: var(--phantom-blue-accent); /* Usar el azul principal para acentos también */
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 75% 55%; /* Rojo para errores */
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: var(--phantom-gray-border);
+    --input: 0 0% 100%; /* Fondo de inputs blanco */
+    --input-border-color: hsl(var(--phantom-gray-border)); /* Variable para el color del borde del input */
+    --ring: var(--phantom-blue-accent);
+    
+    --radius: 0.5rem; /* Bordes un poco menos redondeados */
+  }
+
+  .dark { /* Preparación para futuro tema oscuro, no activo por defecto */
+    --background: 220 20% 10%;
+    --foreground: 0 0% 98%;
+    --card: 220 20% 15%;
+    --card-foreground: 0 0% 98%;
+    --popover: 220 20% 12%;
+    --popover-foreground: 0 0% 98%;
+    --secondary: 220 20% 20%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 220 10% 65%;
+    --muted-foreground: 220 10% 65%;
+    --border: 220 15% 25%;
+    --input: 220 20% 18%;
+    --input-border-color: hsl(var(--border)); /* Usar el color de borde general del tema oscuro */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+}
+
+.gradient-text-dark {
+  @apply bg-gradient-to-r from-slate-800 via-slate-700 to-slate-600 bg-clip-text text-transparent;
+}
+
+.gradient-text-brand-subtle {
+  @apply bg-gradient-to-r from-primary via-blue-600 to-indigo-500 bg-clip-text text-transparent;
+}
+
+
+.product-card {
+  @apply bg-card text-card-foreground rounded-xl p-4 sm:p-5 relative overflow-hidden flex flex-col justify-between border;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease-in-out;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px hsla(var(--primary), 0.12);
+}
+
+.btn-gradient-primary {
+  @apply bg-gradient-to-r from-primary to-blue-600 hover:from-blue-600 hover:to-primary text-primary-foreground shadow-md hover:shadow-lg transition-all;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem; /* sm:gap-6 */
+}
+
+@media (min-width: 640px) {
+    .comparison-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+
+.floating-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.pulse-glow {
+  animation: pulse-glow-blue 2.5s infinite ease-in-out;
+}
+
+@keyframes pulse-glow-blue {
+  0%, 100% { boxShadow: 0 0 10px hsla(var(--primary), 0.2), 0 0 20px hsla(var(--primary), 0.1); }
+  50% { boxShadow: 0 0 25px hsla(var(--primary), 0.4), 0 0 40px hsla(var(--primary), 0.2); }
+}
+
+input, select, textarea {
+  @apply bg-input text-foreground placeholder-muted-foreground focus:ring-1 focus:ring-ring border-[var(--input-border-color)];
+}
+
+/* Shadcn UI Overrides for more subtle look */
+.toast {
+    @apply bg-card border-border shadow-xl;
+}
+.button {
+    @apply transition-all duration-200;
+}
