@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Obsyra Palette - Dark Theme (Default) */
+    --obsyra-bg-dark: 0 0% 7%;       /* Deep black for background */
+    --obsyra-text-light: 0 0% 95%;   /* Off-white / cream for text */
+    --obsyra-primary-accent: 210 70% 55%; /* Slightly more vibrant blue from moon */
+    --obsyra-primary-hover: 210 80% 65%;  /* Brighter blue for hover */
+    --obsyra-secondary-accent: 0 0% 12%; /* Dark grey for cards/secondary elements */
+    --obsyra-border-dark: 0 0% 22%;    /* Dark border, slightly lighter than card */
+    --obsyra-muted-text-dark: 0 0% 55%; /* Muted text for dark theme */
+
+    /* Obsyra Palette - Light Theme (Optional) */
+    --obsyra-bg-light: 0 0% 97%;         /* Very light grey / off-white */
+    --obsyra-text-dark: 0 0% 8%;          /* Dark text for light theme */
+    --obsyra-primary-accent-light: 210 60% 50%; /* Blue for light theme */
+    --obsyra-border-light: 0 0% 88%;
+    --obsyra-muted-text-light: 0 0% 45%;
+    --obsyra-secondary-accent-light: 0 0% 100%; /* White for cards in light */
+
+
+    /* Default to Dark Theme for Obsyra */
+    --background: var(--obsyra-bg-dark);
+    --foreground: var(--obsyra-text-light);
+    
+    --card: var(--obsyra-secondary-accent);
+    --card-foreground: var(--obsyra-text-light);
+    
+    --popover: var(--obsyra-bg-dark);
+    --popover-foreground: var(--obsyra-text-light);
+    
+    --primary: var(--obsyra-primary-accent);
+    --primary-foreground: var(--obsyra-text-light); 
+    
+    --secondary: var(--obsyra-secondary-accent); 
+    --secondary-foreground: var(--obsyra-text-light);
+    
+    --muted: var(--obsyra-muted-text-dark);
+    --muted-foreground: var(--obsyra-muted-text-dark);
+    
+    --accent: var(--obsyra-primary-accent); 
+    --accent-foreground: var(--obsyra-text-light);
+    
+    --destructive: 0 70% 55%; 
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: var(--obsyra-border-dark);
+    --input: var(--obsyra-secondary-accent); 
+    --input-border-color: hsl(var(--border));
+    --ring: var(--obsyra-primary-accent);
+    
+    --radius: 0.5rem; 
+  }
+
+  html.dark {
+    --background: var(--obsyra-bg-dark);
+    --foreground: var(--obsyra-text-light);
+    --card: var(--obsyra-secondary-accent);
+    --card-foreground: var(--obsyra-text-light);
+    --popover: var(--obsyra-bg-dark);
+    --popover-foreground: var(--obsyra-text-light);
+    --primary: var(--obsyra-primary-accent);
+    --primary-foreground: var(--obsyra-text-light);
+    --secondary: var(--obsyra-secondary-accent);
+    --secondary-foreground: var(--obsyra-text-light);
+    --muted: var(--obsyra-muted-text-dark);
+    --muted-foreground: var(--obsyra-muted-text-dark);
+    --accent: var(--obsyra-primary-accent);
+    --accent-foreground: var(--obsyra-text-light);
+    --border: var(--obsyra-border-dark);
+    --input: var(--obsyra-secondary-accent);
+    --input-border-color: hsl(var(--border));
+    --ring: var(--obsyra-primary-accent);
+  }
+
+  html.light {
+    --background: var(--obsyra-bg-light);
+    --foreground: var(--obsyra-text-dark);
+    --card: var(--obsyra-secondary-accent-light);
+    --card-foreground: var(--obsyra-text-dark);
+    --popover: var(--obsyra-bg-light);
+    --popover-foreground: var(--obsyra-text-dark);
+    --primary: var(--obsyra-primary-accent-light);
+    --primary-foreground: var(--obsyra-text-light); /* Ensuring light text on primary for light mode */
+    --secondary: 0 0% 93%; /* Slightly darker secondary for light mode */
+    --secondary-foreground: var(--obsyra-text-dark);
+    --muted: var(--obsyra-muted-text-light);
+    --muted-foreground: var(--obsyra-muted-text-light);
+    --accent: var(--obsyra-primary-accent-light);
+    --accent-foreground: var(--obsyra-text-light);
+    --border: var(--obsyra-border-light);
+    --input: var(--obsyra-secondary-accent-light); 
+    --input-border-color: hsl(var(--border));
+    --ring: var(--obsyra-primary-accent-light);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+}
+
+.gradient-text-brand-subtle {
+  @apply bg-gradient-to-r from-primary via-foreground to-accent bg-clip-text text-transparent;
+}
+
+.product-card {
+  @apply bg-card text-card-foreground rounded-xl p-4 sm:p-5 relative overflow-hidden flex flex-col justify-between border;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
+  transition: all 0.25s ease-in-out;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px hsla(var(--primary), 0.25); 
+}
+
+.btn-gradient-primary {
+  @apply bg-gradient-to-r from-primary to-accent hover:from-accent hover:to-primary text-primary-foreground shadow-md hover:shadow-lg transition-all;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem; 
+}
+
+@media (min-width: 640px) {
+    .comparison-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+}
+
+.floating-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.pulse-glow {
+  animation: pulse-glow-effect 2.5s infinite ease-in-out;
+}
+
+@keyframes pulse-glow-effect {
+  0%, 100% { boxShadow: 0 0 10px hsla(var(--primary), 0.3), 0 0 20px hsla(var(--primary), 0.15); } 
+  50% { boxShadow: 0 0 25px hsla(var(--primary), 0.5), 0 0 40px hsla(var(--primary), 0.25); }
+}
+
+input, select, textarea {
+  @apply bg-input text-foreground placeholder-muted-foreground focus:ring-1 focus:ring-ring border-[var(--input-border-color)];
+}
+
+.toast {
+    @apply bg-card border-border shadow-xl;
+}
+.button {
+    @apply transition-all duration-200;
+}
