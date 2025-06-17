@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
-import { UserPlus, Mail, Lock, CreditCard as CreditCardIcon } from 'lucide-react'; 
+import { UserPlus, Mail, Lock, AlertTriangle } from 'lucide-react'; 
 import { auth, createUserWithEmailAndPassword, updateProfile } from '@/firebase';
 
 const RegisterPage = () => {
@@ -12,29 +11,34 @@ const RegisterPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPaymentFields, setShowPaymentFields] = useState(false);
-  const [paymentData, setPaymentData] = useState({ cardNumber: '', expiryDate: '', cvc: '' });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [firebaseConfigError, setFirebaseConfigError] = useState(false);
 
-  const handlePaymentDataChange = (e) => {
-    const { name, value } = e.target;
-    let formattedValue = value;
-    if (name === 'cardNumber') {
-      formattedValue = value.replace(/\D/g, '').slice(0,16);
-    } else if (name === 'expiryDate') {
-      formattedValue = value.replace(/\D/g, '').slice(0,4);
-      if(formattedValue.length > 2) {
-        formattedValue = `${formattedValue.slice(0,2)}/${formattedValue.slice(2)}`;
-      }
-    } else if (name === 'cvc') {
-      formattedValue = value.replace(/\D/g, '').slice(0,3);
+  React.useEffect(() => {
+    if (!auth || !auth.app || !auth.app.options || !auth.app.options.apiKey || auth.app.options.apiKey === "YOUR_FALLBACK_API_KEY") {
+      setFirebaseConfigError(true);
+      toast({
+        title: "Error de Configuración de Firebase",
+        description: "La API Key de Firebase no está configurada. El registro no funcionará. Contacta al administrador.",
+        variant: "destructive",
+        duration: 10000,
+      });
     }
-    setPaymentData(prev => ({...prev, [name]: formattedValue}));
-  };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (firebaseConfigError) {
+      toast({
+        title: "Error de Configuración",
+        description: "No se puede crear la cuenta debido a un problema de configuración de Firebase. Contacta al administrador.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!name || !email || !password || !confirmPassword) {
       toast({ title: "Campos incompletos", description: "Por favor, completa todos los campos de registro.", variant: "destructive" });
       return;
@@ -48,29 +52,15 @@ const RegisterPage = () => {
       return;
     }
 
-    let paymentInfoMessage = "";
-    if (showPaymentFields) {
-        if (!paymentData.cardNumber || !paymentData.expiryDate || !paymentData.cvc) {
-            toast({ title: "Datos de Pago Incompletos", description: "Por favor, completa los datos de pago o desmarca la opción.", variant: "destructive" });
-            return;
-        }
-        // No procesar, solo simular recolección
-        paymentInfoMessage = " Los datos de pago opcionales (simulados) se han recopilado. En un sistema real, estos se tokenizarían y enviarían de forma segura a un backend para su almacenamiento y uso futuro.";
-    }
-
     setIsLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
       
-      if (showPaymentFields) {
-          console.log("Datos de pago (simulados) para nuevo usuario:", paymentData);
-      }
-
       toast({
         title: "¡Registro Exitoso!",
-        description: `Tu cuenta ha sido creada.${paymentInfoMessage}`,
-        duration: paymentInfoMessage ? 7000 : 5000,
+        description: `Tu cuenta ha sido creada. Ahora puedes iniciar sesión.`,
+        duration: 5000,
       });
       navigate('/auth/login');
 
@@ -84,8 +74,9 @@ const RegisterPage = () => {
         errorMessage = "La contraseña es demasiado débil.";
       } else if (error.code === 'auth/invalid-email') {
         errorMessage = "El formato del correo electrónico no es válido.";
-      } else if (error.code === 'auth/configuration-not-found') {
-        errorMessage = "Error de configuración de Firebase. Contacta al administrador.";
+      } else if (error.code === 'auth/api-key-not-valid' || error.code === 'auth/configuration-not-found') {
+        errorMessage = "Error de configuración de Firebase (API Key inválida o no encontrada). Contacta al administrador.";
+        setFirebaseConfigError(true);
       }
       toast({
         title: "Error de registro",
@@ -105,6 +96,12 @@ const RegisterPage = () => {
       transition={{ duration: 0.3 }}
       className="w-full max-w-md"
     >
+      {firebaseConfigError && (
+        <div className="mb-4 p-3 bg-destructive/10 border border-destructive text-destructive-foreground rounded-md flex items-center">
+          <AlertTriangle className="h-5 w-5 mr-2" />
+          <span>Error de configuración de Firebase. El registro está deshabilitado.</span>
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label htmlFor="name-register" className="block text-sm font-medium text-muted-foreground mb-1">
@@ -124,6 +121,7 @@ const RegisterPage = () => {
                   onChange={(e) => setName(e.target.value)}
                   className="w-full pl-10 p-3 border border-border rounded-lg focus:ring-primary focus:border-primary transition bg-input text-foreground placeholder-muted-foreground/70"
                   placeholder="Tu Nombre Completo"
+                  disabled={firebaseConfigError}
               />
           </div>
         </div>
@@ -145,6 +143,7 @@ const RegisterPage = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 p-3 border border-border rounded-lg focus:ring-primary focus:border-primary transition bg-input text-foreground placeholder-muted-foreground/70"
                   placeholder="tu@ejemplo.com"
+                  disabled={firebaseConfigError}
               />
           </div>
         </div>
@@ -167,6 +166,7 @@ const RegisterPage = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-10 p-3 border border-border rounded-lg focus:ring-primary focus:border-primary transition bg-input text-foreground placeholder-muted-foreground/70"
                   placeholder="Mínimo 6 caracteres"
+                  disabled={firebaseConfigError}
               />
           </div>
         </div>
@@ -189,51 +189,13 @@ const RegisterPage = () => {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full pl-10 p-3 border border-border rounded-lg focus:ring-primary focus:border-primary transition bg-input text-foreground placeholder-muted-foreground/70"
                   placeholder="Confirma tu contraseña"
+                  disabled={firebaseConfigError}
               />
           </div>
         </div>
         
-        <div className="space-y-2">
-            <div className="flex items-center">
-                <input
-                id="showPaymentFields"
-                type="checkbox"
-                checked={showPaymentFields}
-                onChange={(e) => setShowPaymentFields(e.target.checked)}
-                className="h-4 w-4 text-primary border-border rounded focus:ring-primary"
-                />
-                <label htmlFor="showPaymentFields" className="ml-2 block text-sm text-muted-foreground">
-                Añadir método de pago (opcional - simulación)
-                </label>
-            </div>
-            {showPaymentFields && (
-                <motion.div 
-                    initial={{opacity:0, height:0}} 
-                    animate={{opacity:1, height:'auto'}} 
-                    className="space-y-3 pt-2 pl-2 border-l-2 border-primary/50"
-                >
-                    <p className="text-xs text-amber-500 dark:text-amber-400">Atención: Estos campos son para simulación. No ingreses datos reales de tarjetas. El procesamiento real requiere un backend seguro (PCI DSS).</p>
-                    <div>
-                        <label htmlFor="cardNumber" className="block text-xs font-medium text-muted-foreground">Número de Tarjeta</label>
-                        <input type="text" id="cardNumber" name="cardNumber" value={paymentData.cardNumber} onChange={handlePaymentDataChange} className="mt-1 block w-full p-2 border border-border rounded-md bg-input text-sm" placeholder="•••• •••• •••• ••••"/>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label htmlFor="expiryDate" className="block text-xs font-medium text-muted-foreground">Expiración (MM/YY)</label>
-                            <input type="text" id="expiryDate" name="expiryDate" value={paymentData.expiryDate} onChange={handlePaymentDataChange} className="mt-1 block w-full p-2 border border-border rounded-md bg-input text-sm" placeholder="MM/YY"/>
-                        </div>
-                        <div>
-                            <label htmlFor="cvc" className="block text-xs font-medium text-muted-foreground">CVC</label>
-                            <input type="text" id="cvc" name="cvc" value={paymentData.cvc} onChange={handlePaymentDataChange} className="mt-1 block w-full p-2 border border-border rounded-md bg-input text-sm" placeholder="•••"/>
-                        </div>
-                    </div>
-                </motion.div>
-            )}
-        </div>
-
-
         <div>
-          <Button type="submit" className="w-full btn-gradient-primary text-primary-foreground font-semibold py-3 rounded-lg transition-all duration-300 pulse-glow text-base" disabled={isLoading}>
+          <Button type="submit" className="w-full btn-gradient-primary text-primary-foreground font-semibold py-3 rounded-lg transition-all duration-300 pulse-glow text-base" disabled={isLoading || firebaseConfigError}>
             {isLoading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary-foreground mr-2"></div>
             ) : (

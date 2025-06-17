@@ -21,13 +21,8 @@ const CheckoutPage = ({ cart, onPlaceOrder, currency }) => {
     country: 'República Dominicana', 
     phone: '',
     email: '',
-    paymentCardName: '',
-    paymentCardNumber: '',
-    paymentCardExpiry: '',
-    paymentCardCvc: '',
-    paymentPaypalEmail: '',
   });
-  const [paymentMethod, setPaymentMethod] = useState(''); 
+  const [paymentMethod, setPaymentMethod] = useState('cash'); // Default to cash
   const [isLoading, setIsLoading] = useState(false);
 
   const symbols = { USD: '$', EUR: '€', GBP: '£', DOP: 'RD$' };
@@ -40,7 +35,7 @@ const CheckoutPage = ({ cart, onPlaceOrder, currency }) => {
     if (user) {
       setFormData(prev => ({
         ...prev,
-        fullName: user.name || '',
+        fullName: user.displayName || '', // Corrected to displayName
         email: user.email || ''
       }));
     }
@@ -48,27 +43,9 @@ const CheckoutPage = ({ cart, onPlaceOrder, currency }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
-    if (name === 'paymentCardNumber') {
-      setFormData(prev => ({ ...prev, [name]: value.replace(/\D/g, '').slice(0,16) }));
-    } else if (name === 'paymentCardExpiry') {
-      setFormData(prev => ({ ...prev, [name]: value.replace(/\D/g, '').slice(0,4) }));
-    } else if (name === 'paymentCardCvc') {
-      setFormData(prev => ({ ...prev, [name]: value.replace(/\D/g, '').slice(0,3) }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
   
-  const handlePaymentMethodProcessing = (methodName) => {
-      toast({
-        title: `Procesando con ${methodName} (Simulación)`,
-        description: `En un entorno real, aquí se interactuaría con la pasarela de ${methodName} a través de tu backend. No se procesará un pago real.`,
-        variant: "default",
-        duration: 7000,
-      });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -87,32 +64,6 @@ const CheckoutPage = ({ cart, onPlaceOrder, currency }) => {
         setIsLoading(false);
         return;
     }
-
-    if (paymentMethod === 'card') {
-        const cardFields = ['paymentCardName', 'paymentCardNumber', 'paymentCardExpiry', 'paymentCardCvc'];
-        for (const key of cardFields) {
-            if (formData[key].trim() === '') {
-                toast({ title: "Datos de Tarjeta Requeridos", description: `Por favor, completa el campo "${key.replace(/([A-Z])/g, ' $1')}".`, variant: "destructive" });
-                setIsLoading(false);
-                return;
-            }
-        }
-         handlePaymentMethodProcessing("Tarjeta de Crédito/Débito");
-    }
-    
-    if (paymentMethod === 'paypal' && formData.paymentPaypalEmail.trim() === '') {
-        toast({ title: "Correo de PayPal Requerido", description: "Por favor, ingresa tu correo de PayPal.", variant: "destructive" });
-        setIsLoading(false);
-        return;
-    }
-     if (paymentMethod === 'paypal') {
-        handlePaymentMethodProcessing("PayPal");
-    }
-    
-    if (paymentMethod === 'cash') {
-        handlePaymentMethodProcessing("Pago Contra Entrega");
-    }
-
 
     if (cart.length === 0) {
         toast({ title: "Carrito Vacío", description: "No puedes proceder al pago con un carrito vacío.", variant: "destructive" });
@@ -143,11 +94,6 @@ const CheckoutPage = ({ cart, onPlaceOrder, currency }) => {
         totalAmount: totalPrice,
         currency: currency,
         paymentMethod: paymentMethod,
-        paymentDetails: paymentMethod === 'card' ? {
-            cardName: formData.paymentCardName,
-        } : paymentMethod === 'paypal' ? {
-            paypalEmail: formData.paymentPaypalEmail,
-        } : {},
     };
     
     onPlaceOrder(orderDetailsForBackend); 
@@ -204,52 +150,22 @@ const CheckoutPage = ({ cart, onPlaceOrder, currency }) => {
              <div className="p-3 bg-secondary/50 border border-border rounded-md text-xs text-muted-foreground flex items-start space-x-2">
                 <Info size={24} className="text-primary flex-shrink-0 mt-0.5"/>
                 <span>
-                    <strong>Importante:</strong> {storeName} actúa como intermediario. Al completar tu pedido, el administrador utilizará tus datos para realizar la compra en tu nombre directamente con los proveedores y coordinará el envío. Los datos de pago aquí son para este proceso.
+                    <strong>Importante:</strong> {storeName} actúa como intermediario. Al completar tu pedido, el administrador utilizará tus datos para realizar la compra en tu nombre directamente con los proveedores y coordinará el envío.
                 </span>
              </div>
             <div className="space-y-3 mt-4">
               <PaymentOption 
-                id="card" 
-                name="paymentMethod" 
-                value="card" 
-                label="Tarjeta de Crédito/Débito" 
-                checked={paymentMethod === 'card'} 
-                onChange={(e) => setPaymentMethod(e.target.value)}
-                icon={<CreditCardIcon className="h-6 w-6 text-blue-500"/>}
-              />
-              {paymentMethod === 'card' && (
-                <motion.div initial={{opacity:0, height:0}} animate={{opacity:1, height:'auto'}} className="pl-8 space-y-3 pt-2">
-                    <FormInput name="paymentCardName" label="Nombre en la Tarjeta" value={formData.paymentCardName} onChange={handleChange}/>
-                    <FormInput name="paymentCardNumber" label="Número de Tarjeta" value={formData.paymentCardNumber} onChange={handleChange} placeholder="•••• •••• •••• ••••"/>
-                    <div className="grid grid-cols-2 gap-3">
-                        <FormInput name="paymentCardExpiry" label="Expiración (MMYY)" value={formData.paymentCardExpiry} onChange={handleChange} placeholder="MMYY"/>
-                        <FormInput name="paymentCardCvc" label="CVC" value={formData.paymentCardCvc} onChange={handleChange} placeholder="•••"/>
-                    </div>
-                </motion.div>
-              )}
-              <PaymentOption 
-                id="paypal" 
-                name="paymentMethod" 
-                value="paypal" 
-                label="PayPal" 
-                checked={paymentMethod === 'paypal'} 
-                onChange={(e) => setPaymentMethod(e.target.value)}
-                icon={<img  alt="PayPal Logo" class="h-6" src="https://www.paypalobjects.com/images/logos/paypal_logo_color_100x26.png" />}
-              />
-              {paymentMethod === 'paypal' && (
-                 <motion.div initial={{opacity:0, height:0}} animate={{opacity:1, height:'auto'}} className="pl-8 pt-2">
-                    <FormInput name="paymentPaypalEmail" type="email" label="Correo Electrónico de PayPal" value={formData.paymentPaypalEmail} onChange={handleChange} icon={<Mail />} />
-                 </motion.div>
-              )}
-               <PaymentOption 
                 id="cash" 
                 name="paymentMethod" 
                 value="cash" 
-                label="Pago Contra Entrega (Simulación)" 
+                label="Pago Contra Entrega" 
                 checked={paymentMethod === 'cash'} 
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 icon={<DollarSign className="h-6 w-6 text-green-500"/>}
               />
+               <p className="text-xs text-muted-foreground mt-1 pl-10">
+                El pago se realizará al momento de recibir tu pedido.
+               </p>
             </div>
              <p className="text-xs text-muted-foreground mt-4">Al continuar, aceptas nuestros <Link to="/terminos-y-condiciones" className="underline hover:text-primary">Términos y Condiciones</Link>.</p>
           </CheckoutSection>
@@ -333,7 +249,7 @@ const FormInput = ({ label, name, type = "text", value, onChange, icon, ...props
         type={type}
         value={value}
         onChange={onChange}
-        required={name !== 'addressLine2' && !name.startsWith('payment')} 
+        required={name !== 'addressLine2'} 
         className={`w-full ${icon ? 'pl-10' : 'pl-3'} p-3 border border-input-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary transition bg-input text-foreground placeholder-muted-foreground/70`}
         {...props}
       />

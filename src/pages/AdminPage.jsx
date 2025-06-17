@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { List, Edit, Trash2, PlusCircle, DollarSign, BarChart2, Users, Settings, ShoppingBag, Bell, Shield, Power, UserPlus, Minus, Plus } from 'lucide-react';
+import { List, Edit, Trash2, PlusCircle, DollarSign, BarChart2, Users, Settings, ShoppingBag, Bell, Shield, Power, UserPlus, Minus, Plus, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line, Bar, ComposedChart } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Input } from '@/components/ui/input'; // Asumiendo que tienes un componente Input
+import { Input } from '@/components/ui/input'; 
 
 const AdminPage = ({ products, setProducts, setIsAddProductModalOpen, categories, adminEmail, updateProductStock: globalUpdateProductStock }) => {
   const [activeProducts, setActiveProducts] = useState(products.map(p => ({ ...p, active: true, editStock: p.stock })));
@@ -41,7 +41,7 @@ const AdminPage = ({ products, setProducts, setIsAddProductModalOpen, categories
     const product = activeProducts.find(p => p.id === productId);
     toast({
       title: `Producto ${product && !product.active ? "Activado" : "Desactivado"}`,
-      description: `${product ? product.name : ''} ahora está ${product && !product.active ? "visible" : "oculto"} en la tienda. (Simulación - cambios solo visuales en admin)`,
+      description: `${product ? product.name : ''} ahora está ${product && !product.active ? "visible" : "oculto"} en la tienda.`,
     });
   };
 
@@ -49,7 +49,7 @@ const AdminPage = ({ products, setProducts, setIsAddProductModalOpen, categories
     const stock = parseInt(newStock, 10);
     if (isNaN(stock) || stock < 0) {
         toast({title: "Stock Inválido", description: "El stock debe ser un número positivo.", variant: "destructive"});
-        setActiveProducts(prev => prev.map(p => p.id === productId ? { ...p, editStock: p.stock } : p)); // revertir
+        setActiveProducts(prev => prev.map(p => p.id === productId ? { ...p, editStock: p.stock } : p)); 
         return;
     }
     setActiveProducts(prev => prev.map(p => p.id === productId ? { ...p, editStock: stock } : p));
@@ -59,14 +59,13 @@ const AdminPage = ({ products, setProducts, setIsAddProductModalOpen, categories
     const productToUpdate = activeProducts.find(p => p.id === productId);
     if (!productToUpdate) return;
 
-    // Actualizar el stock en el estado global (useProducts) y localStorage
-    globalUpdateProductStock(productId, productToUpdate.stock - productToUpdate.editStock, true); // true para indicar que es un ajuste directo
+    globalUpdateProductStock(productId, productToUpdate.stock - productToUpdate.editStock, true); 
 
     setActiveProducts(prev => prev.map(p => p.id === productId ? { ...p, stock: p.editStock } : p));
     
     toast({
-      title: "Stock Actualizado Localmente",
-      description: `Stock de ${productToUpdate.name} actualizado a ${productToUpdate.editStock}. (Simulación - backend necesario para persistencia real).`,
+      title: "Stock Actualizado",
+      description: `Stock de ${productToUpdate.name} actualizado a ${productToUpdate.editStock}.`,
     });
   };
 
@@ -80,13 +79,15 @@ const AdminPage = ({ products, setProducts, setIsAddProductModalOpen, categories
   };
 
   const salesData = [
-    { name: 'Ene', Ventas: Math.floor(Math.random() * 3000) + 1000, Ganancia: Math.floor(Math.random() * 1000) + 200 },
-    { name: 'Feb', Ventas: Math.floor(Math.random() * 4000) + 1500, Ganancia: Math.floor(Math.random() * 1500) + 300 },
-    { name: 'Mar', Ventas: Math.floor(Math.random() * 3500) + 1200, Ganancia: Math.floor(Math.random() * 1200) + 250 },
-    { name: 'Abr', Ventas: Math.floor(Math.random() * 5000) + 2000, Ganancia: Math.floor(Math.random() * 2000) + 400 },
-    { name: 'May', Ventas: Math.floor(Math.random() * 4500) + 1800, Ganancia: Math.floor(Math.random() * 1800) + 350 },
+    { name: 'Ene', Ventas: 0, Ganancia: 0 },
+    { name: 'Feb', Ventas: 0, Ganancia: 0 },
+    { name: 'Mar', Ventas: 0, Ganancia: 0 },
+    { name: 'Abr', Ventas: 0, Ganancia: 0 },
+    { name: 'May', Ventas: 0, Ganancia: 0 },
   ];
   
+  const hasRealSalesData = false; // Cambiar a true cuando haya datos reales
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -108,7 +109,13 @@ const AdminPage = ({ products, setProducts, setIsAddProductModalOpen, categories
       </div>
 
       <div className="mb-10 bg-card p-6 sm:p-8 rounded-xl shadow-lg border border-border">
-        <h2 className="text-2xl font-semibold text-card-foreground mb-4">Rendimiento de Ventas (Simulado)</h2>
+        <h2 className="text-2xl font-semibold text-card-foreground mb-4">Rendimiento de Ventas</h2>
+        {!hasRealSalesData && (
+          <div className="flex items-center p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg dark:bg-yellow-200 dark:text-yellow-800" role="alert">
+            <AlertTriangle className="flex-shrink-0 inline w-5 h-5 mr-3" />
+            <span className="font-medium">Datos de ejemplo.</span> Los gráficos mostrarán datos reales cuando se integre un backend.
+          </div>
+        )}
         <div style={{ width: '100%', height: 300 }}>
           <ResponsiveContainer>
             <ComposedChart data={salesData}>

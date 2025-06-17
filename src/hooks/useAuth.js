@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { auth, onAuthStateChanged, signOut as firebaseSignOut } from '@/firebase';
 import { toast } from '@/components/ui/use-toast';
@@ -13,12 +12,18 @@ export const useAuth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!auth || !auth.onAuthStateChanged) {
+      console.error("Firebase auth no está disponible. La autenticación no funcionará.");
+      setIsLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         const userData = {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
-          name: firebaseUser.displayName || firebaseUser.email.split('@')[0],
+          displayName: firebaseUser.displayName || firebaseUser.email.split('@')[0],
         };
         setUser(userData);
         localStorage.setItem('currentUser', JSON.stringify(userData));
@@ -29,11 +34,23 @@ export const useAuth = () => {
         localStorage.removeItem('currentUser');
       }
       setIsLoading(false);
+    }, (error) => {
+      console.error("Error en onAuthStateChanged:", error);
+      toast({
+        title: "Error de Autenticación",
+        description: "Hubo un problema al verificar tu estado de sesión. Intenta recargar la página.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
   const logout = async () => {
+    if (!auth || !auth.signOut) {
+      toast({ title: "Error", description: "No se puede cerrar sesión, Firebase no está configurado.", variant: "destructive" });
+      return;
+    }
     try {
       await firebaseSignOut(auth);
       toast({ title: "¡Sesión cerrada!", description: "Has cerrado sesión correctamente." });
