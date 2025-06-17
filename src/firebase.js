@@ -16,13 +16,13 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
- apiKey: "AIzaSyAvJAAJdYItG34UbBJgBvERjFr4aCq0emM",
-  authDomain: "phantom-deals.firebaseapp.com",
-  projectId: "phantom-deals",
-  storageBucket: "phantom-deals.firebasestorage.app",
-  messagingSenderId: "144102481020",
-  appId: "1:144102481020:web:79a4820eeefb728050fdf9",
-  measurementId: "G-XTE7DEJ2SE"
+  apiKey: "AIzaSyDz-9rgRK8j7fIe1wnnlfb32zCxv_hsXdE",
+  authDomain: "obsyra-17dd4.firebaseapp.com",
+  projectId: "obsyra-17dd4",
+  storageBucket: "obsyra-17dd4.firebasestorage.app",
+  messagingSenderId: "783778716842",
+  appId: "1:783778716842:web:29480f6cbf33c9ddef44d3",
+  measurementId: "G-SF8M2CFYET"
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
