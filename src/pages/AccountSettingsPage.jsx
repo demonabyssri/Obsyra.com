@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, Bell, Shield, Palette, CreditCard, KeyRound, Settings as SettingsIconLucide, Trash2, ShieldCheck, FileText, ListOrdered } from 'lucide-react';
+import { User, Mail, Lock, Bell, Shield, Palette, CreditCard, KeyRound, Settings as SettingsIconLucide, Trash2, ShieldCheck, FileText, ListOrdered, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
 import { auth, updateProfile as firebaseUpdateProfile, sendPasswordResetEmail, deleteUser as firebaseDeleteUser } from '@/firebase';
@@ -28,21 +27,29 @@ const AccountSettingsPage = ({ user, currentTheme, onToggleTheme }) => {
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [isTwoFactorModalOpen, setIsTwoFactorModalOpen] = useState(false);
   const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState(() => {
-    return localStorage.getItem('2fa_enabled_simulated') === 'true';
+    return localStorage.getItem('2fa_enabled_for_user') === 'true';
   });
 
 
   useEffect(() => {
     if (user) {
       setProfileData({
-        name: user.name || '',
+        name: user.displayName || '', // Corrected: use displayName from auth user
         email: user.email || ''
       });
+      // Check if 2FA for this specific user was enabled (if you store it per user)
+      // For now, it's a global simulation, but ideally it's user-specific
+      setIsTwoFactorEnabled(localStorage.getItem(`2fa_enabled_${user.uid}`) === 'true');
     }
   }, [user]);
 
-  const handleNotImplemented = (feature) => {
-    toast({ title: "🚧 ¡Función en desarrollo!", description: `La opción "${feature}" requiere un backend o está en desarrollo.` });
+  const handleNotImplementedYet = (featureName) => {
+     toast({
+      title: "Función no disponible",
+      description: `La función "${featureName}" requiere integración con un servicio externo o un backend y no está implementada.`,
+      variant: "default",
+      duration: 5000,
+    });
   };
   
   const handleProfileSave = async () => {
@@ -109,26 +116,25 @@ const AccountSettingsPage = ({ user, currentTheme, onToggleTheme }) => {
   };
 
   const handleActivateTwoFactor = () => {
+    // This is still a simulation as real 2FA requires backend
+    if (user) localStorage.setItem(`2fa_enabled_${user.uid}`, 'true');
     setIsTwoFactorEnabled(true);
-    localStorage.setItem('2fa_enabled_simulated', 'true');
     toast({
-      title: "¡2FA Activada (Simulación)!",
-      description: "La Autenticación de Dos Factores ha sido activada para tu cuenta (simulación).",
+      title: "¡2FA Activada!",
+      description: "La Autenticación de Dos Factores ha sido activada para tu cuenta. (Simulación Front-End)",
       className: "bg-green-500 text-white",
       duration: 5000,
     });
-    // Real 2FA activation requires backend.
   };
 
   const handleDeactivateTwoFactor = () => {
+    if (user) localStorage.removeItem(`2fa_enabled_${user.uid}`);
     setIsTwoFactorEnabled(false);
-    localStorage.removeItem('2fa_enabled_simulated');
     toast({
-      title: "2FA Desactivada (Simulación)",
+      title: "2FA Desactivada",
       description: "La Autenticación de Dos Factores ha sido desactivada.",
       variant: "destructive",
     });
-     // Real 2FA deactivation requires backend.
   };
 
 
@@ -180,12 +186,13 @@ const AccountSettingsPage = ({ user, currentTheme, onToggleTheme }) => {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
                             <ShieldCheck className="mr-2 h-5 w-5 text-green-600 dark:text-green-400" />
-                            <p className="text-sm font-medium text-green-700 dark:text-green-300">2FA está ACTIVADA (Simulación)</p>
+                            <p className="text-sm font-medium text-green-700 dark:text-green-300">2FA está ACTIVADA</p>
                         </div>
                         <Button variant="link" onClick={handleDeactivateTwoFactor} className="text-xs text-destructive hover:text-destructive-foreground/80 p-0">
                             Desactivar
                         </Button>
                     </div>
+                     <p className="text-xs text-green-600 dark:text-green-400 mt-1">(Simulación: la funcionalidad 2FA real requiere backend)</p>
                 </div>
             )}
 
@@ -217,17 +224,17 @@ const AccountSettingsPage = ({ user, currentTheme, onToggleTheme }) => {
         </SettingsSection>
 
         <SettingsSection title="Preferencias de Notificación" icon={<Bell />}>
-            <p className="text-sm text-muted-foreground mb-4">Gestiona cómo te contactamos. (Notificaciones reales por correo/SMS requieren backend).</p>
+            <p className="text-sm text-muted-foreground mb-4">Gestiona cómo te contactamos.</p>
             <div className="space-y-3">
                 <div className="flex items-center justify-between">
                     <span className="text-card-foreground">Notificaciones por correo</span>
-                    <Button size="sm" variant={notifications.email ? "default" : "outline"} onClick={() => {setNotifications(p => ({...p, email: !p.email})); handleNotImplemented("Notificaciones por correo");}} className={notifications.email ? "btn-gradient-primary text-primary-foreground" : "border-border text-muted-foreground hover:bg-accent"}>
+                    <Button size="sm" variant={notifications.email ? "default" : "outline"} onClick={() => {setNotifications(p => ({...p, email: !p.email})); handleNotImplementedYet("Notificaciones por correo");}} className={notifications.email ? "btn-gradient-primary text-primary-foreground" : "border-border text-muted-foreground hover:bg-accent"}>
                         {notifications.email ? "Activadas" : "Desactivadas"}
                     </Button>
                 </div>
                  <div className="flex items-center justify-between">
                     <span className="text-card-foreground">Notificaciones por SMS</span>
-                     <Button size="sm" variant={notifications.sms ? "default" : "outline"} onClick={() => {setNotifications(p => ({...p, sms: !p.sms})); handleNotImplemented("Notificaciones por SMS");}} className={notifications.sms ? "btn-gradient-primary text-primary-foreground" : "border-border text-muted-foreground hover:bg-accent"}>
+                     <Button size="sm" variant={notifications.sms ? "default" : "outline"} onClick={() => {setNotifications(p => ({...p, sms: !p.sms})); handleNotImplementedYet("Notificaciones por SMS");}} className={notifications.sms ? "btn-gradient-primary text-primary-foreground" : "border-border text-muted-foreground hover:bg-accent"}>
                         {notifications.sms ? "Activadas" : "Desactivadas"}
                     </Button>
                 </div>
@@ -243,15 +250,15 @@ const AccountSettingsPage = ({ user, currentTheme, onToggleTheme }) => {
         </SettingsSection>
 
         <SettingsSection title="Métodos de Pago" icon={<CreditCard />}>
-            <p className="text-sm text-muted-foreground mb-2">Gestiona tus métodos de pago guardados. (Esta función requiere un backend para almacenar datos de pago de forma segura).</p>
-            <Button variant="outline" onClick={() => handleNotImplemented("Añadir Método de Pago")} className="border-primary/70 text-primary hover:bg-accent hover:text-accent-foreground">Añadir Nuevo Método de Pago</Button>
+            <p className="text-sm text-muted-foreground mb-2">Gestiona tus métodos de pago guardados.</p>
+            <Button variant="outline" onClick={() => handleNotImplementedYet("Añadir Método de Pago")} className="border-primary/70 text-primary hover:bg-accent hover:text-accent-foreground">Añadir Nuevo Método de Pago</Button>
         </SettingsSection>
 
         <SettingsSection title="Mis Datos" icon={<FileText />}>
-            <p className="text-sm text-muted-foreground mb-2">Descarga o gestiona tus datos personales. (Requiere backend).</p>
+            <p className="text-sm text-muted-foreground mb-2">Descarga o gestiona tus datos personales.</p>
             <div className="space-y-3 sm:space-y-0 sm:flex sm:space-x-3">
-                <Button variant="outline" onClick={() => handleNotImplemented("Descargar mis datos")} className="w-full sm:w-auto border-primary/70 text-primary hover:bg-accent hover:text-accent-foreground">Descargar mis Datos</Button>
-                <Button variant="outline" onClick={() => handleNotImplemented("Gestionar consentimiento")} className="w-full sm:w-auto border-primary/70 text-primary hover:bg-accent hover:text-accent-foreground">Gestionar Consentimiento</Button>
+                <Button variant="outline" onClick={() => handleNotImplementedYet("Descargar mis datos")} className="w-full sm:w-auto border-primary/70 text-primary hover:bg-accent hover:text-accent-foreground">Descargar mis Datos</Button>
+                <Button variant="outline" onClick={() => handleNotImplementedYet("Gestionar consentimiento")} className="w-full sm:w-auto border-primary/70 text-primary hover:bg-accent hover:text-accent-foreground">Gestionar Consentimiento</Button>
             </div>
         </SettingsSection>
 

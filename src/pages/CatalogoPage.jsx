@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Search, SlidersHorizontal, ListFilter } from 'lucide-react';
@@ -44,8 +43,8 @@ const CatalogoPage = ({
 
   const handleFilterClick = () => {
     toast({
-        title: "🚧 Filtros Avanzados Próximamente",
-        description: "Estamos trabajando para que puedas filtrar por precio, marca y más. ¡Mantente atento!",
+        title: "Filtros Avanzados no disponibles",
+        description: "La funcionalidad de filtros avanzados requiere una integración más compleja y no está implementada.",
         variant: "default"
     });
   };
@@ -138,7 +137,7 @@ const CatalogoPage = ({
                     {categories.map((category) => {
                         const Icon = category.icon;
                         return (
-                        <DropdownMenuItem key={category.id} onSelect={() => handleCategoryChange(category.id)} className={`cursor-pointer ${selectedCategory === category.id ? 'bg-accent text-accent-foreground' : 'hover:!bg-accent/20'}`}>
+                        <DropdownMenuItem key={category.id} onSelect={() => handleCategoryChange(category.id)} className={`cursor-pointer ${selectedCategory === category.id ? 'bg-accent text-accent-foreground' : 'hover:!bg-accent/20 focus:!bg-accent/20'}`}>
                             <Icon className="w-4 h-4 mr-2" />
                             {category.name}
                         </DropdownMenuItem>

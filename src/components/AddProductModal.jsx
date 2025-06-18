@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -9,9 +8,9 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct, categories }) => {
   const [supplierUrl, setSupplierUrl] = useState('');
   const [productName, setProductName] = useState('');
   const [productDescription, setProductDescription] = useState('');
-  const [originalPrice, setOriginalPrice] = useState(''); // Tu costo
-  const [sellingPrice, setSellingPrice] = useState(''); // Precio de venta al cliente
-  const [discountedPrice, setDiscountedPrice] = useState(''); // Precio original antes de descuento (opcional)
+  const [originalPrice, setOriginalPrice] = useState(''); 
+  const [sellingPrice, setSellingPrice] = useState(''); 
+  const [discountedPrice, setDiscountedPrice] = useState(''); 
   const [category, setCategory] = useState(categories[0]?.id || '');
   const [stock, setStock] = useState('');
   const [imageDescription, setImageDescription] = useState('');
@@ -26,21 +25,21 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct, categories }) => {
     }
     setIsFetchingData(true);
     
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    const mockName = `Producto desde URL ${Math.floor(Math.random() * 1000)}`;
-    const mockDescription = "Descripción obtenida automáticamente del proveedor (simulación). Detalles sobre materiales, características y uso.";
-    const mockOriginalPrice = (Math.random() * 50 + 5).toFixed(2); // Simula tu costo
-
-    setProductName(mockName);
-    setProductDescription(mockDescription);
-    setOriginalPrice(mockOriginalPrice); // Este es tu costo
-    setSellingPrice((parseFloat(mockOriginalPrice) + (Math.random() * 20 + 10)).toFixed(2)); // Sugiere un precio de venta
-    setImageDescription(`Imagen de ${mockName}`);
+    toast({
+      title: "Extracción de Datos",
+      description: "La extracción automática de datos de URL de proveedores requiere un backend y no está implementada en esta versión.",
+      variant: "default",
+      duration: 7000,
+    });
+    
+    setProductName('');
+    setProductDescription('');
+    setOriginalPrice(''); 
+    setSellingPrice(''); 
+    setImageDescription('');
     
     setIsFetchingData(false);
-    setDataFetched(true);
-    toast({ title: "¡Datos Obtenidos!", description: "Información básica del producto cargada (simulación). Completa los detalles restantes." });
+    setDataFetched(true); 
   };
 
 
@@ -54,9 +53,9 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct, categories }) => {
     onAddProduct({
       name: productName,
       description: productDescription,
-      originalPrice: parseFloat(originalPrice), // Tu costo
-      sellingPrice: parseFloat(sellingPrice), // Precio de venta al cliente
-      discountedPrice: discountedPrice ? parseFloat(discountedPrice) : null, // Precio original antes de descuento
+      originalPrice: parseFloat(originalPrice), 
+      sellingPrice: parseFloat(sellingPrice), 
+      discountedPrice: discountedPrice ? parseFloat(discountedPrice) : null, 
       supplierUrl, 
       category,
       stock: parseInt(stock),
@@ -133,10 +132,10 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct, categories }) => {
                     <span className="ml-2 hidden sm:inline">{isFetchingData ? "Obteniendo..." : "Obtener Datos"}</span>
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">La extracción real de datos de URL de proveedores requiere un backend robusto.</p>
+                <p className="text-xs text-muted-foreground mt-1">Intentará obtener datos. La extracción completa requiere un backend.</p>
               </div>
 
-              {dataFetched && (
+              {(dataFetched || supplierUrl) && ( 
                 <motion.div 
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
@@ -151,6 +150,7 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct, categories }) => {
                             id="productName"
                             value={productName}
                             onChange={(e) => setProductName(e.target.value)}
+                            placeholder="Nombre que se mostrará en tu tienda"
                             className="w-full p-3 border-0 focus:ring-0 rounded-lg bg-transparent"
                             required
                         />
@@ -166,6 +166,7 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct, categories }) => {
                             value={productDescription}
                             onChange={(e) => setProductDescription(e.target.value)}
                             rows="3"
+                            placeholder="Detalles del producto, materiales, etc."
                             className="w-full p-3 border-0 focus:ring-0 rounded-lg resize-none bg-transparent"
                         ></textarea>
                         </div>
@@ -176,7 +177,7 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct, categories }) => {
                         <label htmlFor="originalPrice" className="block text-sm font-medium text-muted-foreground mb-1">Tu Costo (Proveedor)*</label>
                         <div className="flex items-center border border-border rounded-lg focus-within:ring-2 focus-within:ring-primary focus-within:border-primary bg-input">
                             <DollarSign className="w-5 h-5 text-muted-foreground mx-3" />
-                            <input type="number" id="originalPrice" value={originalPrice} onChange={(e) => setOriginalPrice(e.target.value)} step="0.01" className="w-full p-3 border-0 focus:ring-0 rounded-lg bg-transparent" required />
+                            <input type="number" id="originalPrice" value={originalPrice} onChange={(e) => setOriginalPrice(e.target.value)} step="0.01" placeholder="Costo de adquisición" className="w-full p-3 border-0 focus:ring-0 rounded-lg bg-transparent" required />
                         </div>
                         </div>
 
@@ -184,7 +185,7 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct, categories }) => {
                         <label htmlFor="sellingPrice" className="block text-sm font-medium text-muted-foreground mb-1">Precio de Venta (Cliente)*</label>
                         <div className="flex items-center border border-border rounded-lg focus-within:ring-2 focus-within:ring-primary focus-within:border-primary bg-input">
                             <DollarSign className="w-5 h-5 text-primary mx-3" />
-                            <input type="number" id="sellingPrice" value={sellingPrice} onChange={(e) => setSellingPrice(e.target.value)} step="0.01" placeholder="Ej: costo + $10-$50" className="w-full p-3 border-0 focus:ring-0 rounded-lg bg-transparent" required />
+                            <input type="number" id="sellingPrice" value={sellingPrice} onChange={(e) => setSellingPrice(e.target.value)} step="0.01" placeholder="Precio final para el cliente" className="w-full p-3 border-0 focus:ring-0 rounded-lg bg-transparent" required />
                         </div>
                         </div>
                     </div>
@@ -207,7 +208,7 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct, categories }) => {
                         </div>
                         <div>
                         <label htmlFor="stock" className="block text-sm font-medium text-muted-foreground mb-1">Stock Disponible*</label>
-                        <input type="number" id="stock" value={stock} onChange={(e) => setStock(e.target.value)} min="0" className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-input" required />
+                        <input type="number" id="stock" value={stock} onChange={(e) => setStock(e.target.value)} min="0" placeholder="Cantidad disponible" className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-input" required />
                         </div>
                     </div>
                     <div>
@@ -216,6 +217,7 @@ const AddProductModal = ({ isOpen, onClose, onAddProduct, categories }) => {
                         <ImageIcon className="w-5 h-5 text-muted-foreground mx-3" />
                         <input type="text" id="imageDescription" value={imageDescription} onChange={(e) => setImageDescription(e.target.value)} placeholder="Ej: Camiseta negra, logo Z" className="w-full p-3 border-0 focus:ring-0 rounded-lg bg-transparent" />
                         </div>
+                         <p className="text-xs text-muted-foreground mt-1">Se usará para generar una imagen de marcador de posición. La subida de imágenes real no está disponible.</p>
                     </div>
                     <div className="flex justify-end space-x-4 pt-4">
                         <Button type="button" variant="outline" onClick={() => { resetForm(); onClose();}} className="text-muted-foreground border-border hover:bg-secondary"> Cancelar </Button>

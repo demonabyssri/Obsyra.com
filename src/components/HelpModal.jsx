@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -66,6 +65,7 @@ const HelpModal = ({ isOpen, onClose, contactEmail, storeName }) => {
                 <ul className="space-y-1 mt-2">
                     <li><Link to="/terminos-y-condiciones" onClick={onClose} className="inline-flex items-center text-primary hover:underline"><ExternalLink size={14} className="mr-1.5"/>Términos y Condiciones</Link></li>
                     <li><Link to="/politica-de-privacidad" onClick={onClose} className="inline-flex items-center text-primary hover:underline"><ExternalLink size={14} className="mr-1.5"/>Política de Privacidad</Link></li>
+                     <li><Link to="/aviso-legal-terceros" onClick={onClose} className="inline-flex items-center text-primary hover:underline"><ExternalLink size={14} className="mr-1.5"/>Aviso Legal y Modelo de Negocio</Link></li>
                 </ul>
               </section>
             </div>

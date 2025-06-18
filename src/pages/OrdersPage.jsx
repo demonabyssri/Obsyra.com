@@ -35,7 +35,7 @@ const OrderDetailsModal = ({ order, onClose, currencySymbol }) => {
           <p><strong>Fecha:</strong> {new Date(order.orderDate).toLocaleDateString()}</p>
           <p><strong>Estado:</strong> <span className={`font-medium px-2 py-0.5 rounded-full text-xs ${ order.status === 'Entregado' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'}`}>{order.status}</span></p>
           <p><strong>Total Pagado:</strong> <span className="font-bold text-primary">{currencySymbol}{order.totalAmount.toFixed(2)}</span></p>
-          <p><strong>Dirección de Envío:</strong> {order.addressLine1}, {order.city}, {order.postalCode}, {order.country}</p>
+          <p><strong>Dirección de Envío:</strong> {order.customerInfo.addressLine1}, {order.customerInfo.city}, {order.customerInfo.postalCode}, {order.customerInfo.country}</p>
           <p><strong>Método de Pago:</strong> {order.paymentMethod?.toUpperCase() || 'No especificado'}</p>
         </div>
         <h3 className="font-semibold text-card-foreground mb-3">Artículos:</h3>
@@ -50,7 +50,7 @@ const OrderDetailsModal = ({ order, onClose, currencySymbol }) => {
             </div>
           ))}
         </div>
-         <p className="text-xs text-muted-foreground mt-4 text-center">Esta es una simulación. Los pedidos no son procesados realmente.</p>
+         <p className="text-xs text-muted-foreground mt-4 text-center">Los pedidos son procesados por el administrador de la tienda.</p>
       </motion.div>
     </motion.div>
   );
@@ -62,7 +62,7 @@ const OrdersPage = ({ user }) => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const { currency } = useStoreSettings();
 
-  const symbols = { USD: '$', EUR: '€', GBP: '£' };
+  const symbols = { USD: '$', EUR: '€', GBP: '£', DOP: 'RD$' };
   const currentSymbol = symbols[currency] || '$';
 
   useEffect(() => {

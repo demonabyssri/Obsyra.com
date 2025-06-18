@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { Ghost, Zap, Heart, Package, Home as HomeIcon, ShoppingBag as BeautyIcon, Shirt, ToyBrick, Lamp } from 'lucide-react';

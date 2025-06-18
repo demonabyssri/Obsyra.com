@@ -22,7 +22,7 @@ const CheckoutPage = ({ cart, onPlaceOrder, currency }) => {
     phone: '',
     email: '',
   });
-  const [paymentMethod, setPaymentMethod] = useState('cash'); // Default to cash
+  const [paymentMethod, setPaymentMethod] = useState('cash'); 
   const [isLoading, setIsLoading] = useState(false);
 
   const symbols = { USD: '$', EUR: '€', GBP: '£', DOP: 'RD$' };
@@ -35,7 +35,7 @@ const CheckoutPage = ({ cart, onPlaceOrder, currency }) => {
     if (user) {
       setFormData(prev => ({
         ...prev,
-        fullName: user.displayName || '', // Corrected to displayName
+        fullName: user.displayName || '', 
         email: user.email || ''
       }));
     }

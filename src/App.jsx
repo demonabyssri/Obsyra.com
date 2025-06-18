@@ -19,7 +19,7 @@ import { useStoreSettings } from '@/hooks/useStoreSettings';
 import { AnimatePresence } from 'framer-motion';
 import { toast } from '@/components/ui/use-toast';
 import confetti from 'canvas-confetti';
-import { auth } from '@/firebase'; 
+import { firebaseInitializationError } from '@/firebase'; 
 
 const AuthLayout = lazy(() => import('@/layouts/AuthLayout'));
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
@@ -38,6 +38,7 @@ const AccountSettingsPage = lazy(() => import('@/pages/AccountSettingsPage'));
 const TermsPage = lazy(() => import('@/pages/TermsPage'));
 const PrivacyPage = lazy(() => import('@/pages/PrivacyPage'));
 const SupportPage = lazy(() => import('@/pages/SupportPage'));
+const LegalNoticePage = lazy(() => import('@/pages/LegalNoticePage'));
 
 
 const PageSkeleton = () => (
@@ -92,17 +93,12 @@ const App = () => {
     }
     return 'dark'; 
   });
-  const [firebaseReady, setFirebaseReady] = useState(false);
-
+  
   useEffect(() => {
-    if (auth && auth.app && auth.app.options && auth.app.options.apiKey && auth.app.options.apiKey !== "YOUR_FALLBACK_API_KEY") {
-      setFirebaseReady(true);
-    } else {
-      setFirebaseReady(false);
-      console.error("Firebase API Key no está configurada correctamente. Verifica tus variables de entorno (VITE_FIREBASE_API_KEY) o el archivo firebase.js.");
+    if (firebaseInitializationError) {
       toast({
         title: "Error Crítico de Configuración",
-        description: "La API Key de Firebase no está configurada. La autenticación y otras funciones de Firebase no estarán disponibles. Por favor, revisa la consola para más detalles.",
+        description: firebaseInitializationError,
         variant: "destructive",
         duration: 20000, 
       });
@@ -179,13 +175,13 @@ const App = () => {
     clearCart();
   };
 
-  if (!firebaseReady && (authLoading || productsLoading)) {
+  if (firebaseInitializationError && (authLoading || productsLoading)) {
     return (
       <div className="min-h-screen bg-background flex flex-col justify-center items-center p-4">
         <div className="bg-destructive/10 border border-destructive text-destructive p-6 rounded-lg max-w-md text-center">
           <h1 className="text-2xl font-bold mb-2">Error de Configuración</h1>
-          <p className="mb-4">La aplicación no puede iniciarse correctamente debido a un problema con la configuración de Firebase. Por favor, asegúrate de que la API Key y otras credenciales estén correctamente configuradas en tus variables de entorno.</p>
-          <p className="text-sm">Consulta la consola del navegador para más detalles técnicos.</p>
+          <p className="mb-4">{firebaseInitializationError}</p>
+          <p className="text-sm">Consulta la consola del navegador para más detalles técnicos y asegúrate de que tus variables de entorno (<code>VITE_FIREBASE_API_KEY</code>, etc.) estén correctamente configuradas.</p>
         </div>
         <Toaster />
       </div>
@@ -233,7 +229,7 @@ const App = () => {
                   />} 
                 />
                 
-                <Route path="/auth" element={user && !authLoading && firebaseReady ? <Navigate to="/catalogo" /> : <AuthLayout />}>
+                <Route path="/auth" element={user && !authLoading && !firebaseInitializationError ? <Navigate to="/catalogo" /> : <AuthLayout />}>
                   <Route path="login" element={<LoginPage />} />
                   <Route path="register" element={<RegisterPage />} />
                   <Route path="recover" element={<RecoverPage />} />
@@ -282,6 +278,7 @@ const App = () => {
                 
                 <Route path="/terminos-y-condiciones" element={<TermsPage />} />
                 <Route path="/politica-de-privacidad" element={<PrivacyPage />} />
+                <Route path="/aviso-legal-terceros" element={<LegalNoticePage />} />
                 <Route path="/soporte" element={<SupportPage />} />
 
 

@@ -180,7 +180,7 @@ const ProductDetailPage = ({ products: allProductsFromApp, handlePurchase, user 
         >
           <img 
             loading="lazy"
-            class="w-full h-full object-contain rounded-lg"
+            className="w-full h-full object-contain rounded-lg"
             alt={product.imageDescription || `Imagen de ${product.name}`}
            src="https://images.unsplash.com/photo-1627577741153-74b82d87607b" />
           {product.discountedPrice && (
@@ -204,7 +204,7 @@ const ProductDetailPage = ({ products: allProductsFromApp, handlePurchase, user 
                   <Star key={i} className={`w-5 h-5 ${i < Math.floor(product.rating) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"}`} />
                 ))}
               </div>
-              <span className="text-sm text-muted-foreground hover:underline cursor-pointer" onClick={()=>toast({title:"Reseñas (Simulación)", description:"Pronto podrás ver reseñas detalladas aquí."})}>({product.reviews} reseñas)</span>
+              <span className="text-sm text-muted-foreground hover:underline cursor-pointer" onClick={()=>toast({title:"Reseñas no disponibles", description:"La visualización de reseñas detalladas no está implementada."})}>({product.reviews} reseñas)</span>
             </div>
             <div className="flex items-center gap-2 mb-1">
                 <Tag size={16} className="text-muted-foreground" />
@@ -305,7 +305,7 @@ const ProductDetailPage = ({ products: allProductsFromApp, handlePurchase, user 
 
       {otherCustomersBought.length > 0 && (
          <div className="mt-12 pt-10 border-t border-border">
-            <h2 className="text-2xl font-bold text-foreground mb-6">Otros clientes también compraron... (Simulación)</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-6">Otros clientes también compraron...</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {otherCustomersBought.map((otherProd, index) => (
                     <ProductCard key={otherProd.id} product={otherProd} index={index} favorites={favorites} toggleFavorite={toggleFavorite} isAdminView={false} isLoading={false} />
@@ -316,10 +316,10 @@ const ProductDetailPage = ({ products: allProductsFromApp, handlePurchase, user 
 
 
       <div className="mt-12 pt-10 border-t border-border">
-        <h2 className="text-2xl font-bold text-foreground mb-4">Preguntas sobre este producto (Simulación)</h2>
-        <p className="text-muted-foreground mb-4">¿Tienes alguna pregunta? ¡Pregúntale a la comunidad o al vendedor!</p>
-        <textarea className="w-full p-3 border border-border rounded-lg focus:ring-primary focus:border-primary bg-input text-foreground placeholder-muted-foreground mb-3" rows="3" placeholder="Escribe tu pregunta aquí..."></textarea>
-        <Button onClick={() => toast({title: "Pregunta Enviada (Simulación)", description:"Tu pregunta ha sido enviada. Recibirás una respuesta pronto."})} className="btn-gradient-primary text-primary-foreground">
+        <h2 className="text-2xl font-bold text-foreground mb-4">Preguntas sobre este producto</h2>
+        <p className="text-muted-foreground mb-4">¿Tienes alguna pregunta? La funcionalidad de preguntas y respuestas no está implementada.</p>
+        <textarea className="w-full p-3 border border-border rounded-lg focus:ring-primary focus:border-primary bg-input text-foreground placeholder-muted-foreground mb-3" rows="3" placeholder="Escribe tu pregunta aquí..." disabled></textarea>
+        <Button onClick={() => toast({title: "Función no disponible", description:"El envío de preguntas no está implementado."})} className="btn-gradient-primary text-primary-foreground" disabled>
             <MessageSquare className="mr-2 h-4 w-4" /> Enviar Pregunta
         </Button>
       </div>

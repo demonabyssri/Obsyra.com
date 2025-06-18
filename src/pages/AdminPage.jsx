@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { List, Edit, Trash2, PlusCircle, DollarSign, BarChart2, Users, Settings, ShoppingBag, Bell, Shield, Power, UserPlus, Minus, Plus, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input'; 
 
 const AdminPage = ({ products, setProducts, setIsAddProductModalOpen, categories, adminEmail, updateProductStock: globalUpdateProductStock }) => {
-  const [activeProducts, setActiveProducts] = useState(products.map(p => ({ ...p, active: true, editStock: p.stock })));
+  const [activeProducts, setActiveProducts] = useState([]);
+
+  useEffect(() => {
+    setActiveProducts(products.map(p => ({ ...p, active: true, editStock: p.stock })));
+  }, [products]);
+
 
   const totalActiveProducts = activeProducts.filter(p => p.active).length;
 
@@ -63,6 +67,9 @@ const AdminPage = ({ products, setProducts, setIsAddProductModalOpen, categories
 
     setActiveProducts(prev => prev.map(p => p.id === productId ? { ...p, stock: p.editStock } : p));
     
+    setProducts(prevGlobal => prevGlobal.map(p => p.id === productId ? {...p, stock: productToUpdate.editStock} : p));
+    localStorage.setItem('userProducts', JSON.stringify(products.map(p => p.id === productId ? {...p, stock: productToUpdate.editStock} : p)));
+    
     toast({
       title: "Stock Actualizado",
       description: `Stock de ${productToUpdate.name} actualizado a ${productToUpdate.editStock}.`,
@@ -71,11 +78,20 @@ const AdminPage = ({ products, setProducts, setIsAddProductModalOpen, categories
 
 
   const handleEditProduct = (product) => {
-    toast({ title: "🚧 ¡Función de edición en desarrollo!", description: "Pronto podrás editar productos directamente aquí. Por ahora, puedes eliminarlo y volver a añadirlo con los cambios." });
+     toast({
+      title: "Edición no disponible",
+      description: "La edición de productos directamente desde aquí no está implementada. Puedes eliminar y volver a añadir el producto.",
+      variant: "default"
+    });
   };
 
-  const handleNotImplemented = (feature) => {
-    toast({ title: "🚧 ¡Próximamente!", description: `La sección "${feature}" requiere un backend y/o está en desarrollo.` });
+  const handleNotImplementedYet = (featureName) => {
+     toast({
+      title: "Función no disponible",
+      description: `La sección "${featureName}" requiere integración con un servicio externo o un backend y no está implementada.`,
+      variant: "default",
+      duration: 5000,
+    });
   };
 
   const salesData = [
@@ -86,7 +102,7 @@ const AdminPage = ({ products, setProducts, setIsAddProductModalOpen, categories
     { name: 'May', Ventas: 0, Ganancia: 0 },
   ];
   
-  const hasRealSalesData = false; // Cambiar a true cuando haya datos reales
+  const hasRealSalesData = false; 
 
   return (
     <motion.div
@@ -111,9 +127,9 @@ const AdminPage = ({ products, setProducts, setIsAddProductModalOpen, categories
       <div className="mb-10 bg-card p-6 sm:p-8 rounded-xl shadow-lg border border-border">
         <h2 className="text-2xl font-semibold text-card-foreground mb-4">Rendimiento de Ventas</h2>
         {!hasRealSalesData && (
-          <div className="flex items-center p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg dark:bg-yellow-200 dark:text-yellow-800" role="alert">
+          <div className="flex items-center p-4 mb-4 text-sm text-yellow-700 bg-yellow-100 rounded-lg dark:bg-yellow-900/20 dark:text-yellow-300 border border-yellow-300 dark:border-yellow-700" role="alert">
             <AlertTriangle className="flex-shrink-0 inline w-5 h-5 mr-3" />
-            <span className="font-medium">Datos de ejemplo.</span> Los gráficos mostrarán datos reales cuando se integre un backend.
+            <span className="font-medium">Datos de ejemplo.</span> Los gráficos mostrarán datos reales cuando se integre un backend de seguimiento de ventas.
           </div>
         )}
         <div style={{ width: '100%', height: 300 }}>
@@ -184,10 +200,10 @@ const AdminPage = ({ products, setProducts, setIsAddProductModalOpen, categories
                                   type="number" 
                                   value={product.editStock} 
                                   onChange={(e) => handleStockChange(product.id, e.target.value)}
-                                  className="w-16 h-8 p-1 text-sm"
+                                  className="w-16 h-8 p-1 text-sm bg-input border-input-border"
                                 />
                                 {product.editStock !== product.stock && (
-                                    <Button size="xs" variant="ghost" onClick={() => handleSaveStock(product.id)} className="h-7 w-7 p-0">✔️</Button>
+                                    <Button size="xs" variant="ghost" onClick={() => handleSaveStock(product.id)} className="h-7 w-7 p-0 text-primary">✔️</Button>
                                 )}
                             </div>
                         </td>
@@ -210,11 +226,11 @@ const AdminPage = ({ products, setProducts, setIsAddProductModalOpen, categories
             )}
         </div>
         <div className="lg:col-span-1 space-y-6">
-            <AdminActionCard title="Ver Pedidos" icon={<List className="text-primary"/>} description="Revisa y gestiona los pedidos de los clientes." onClick={() => handleNotImplemented("Gestión de Pedidos")} />
-            <AdminActionCard title="Gestión de Usuarios" icon={<Users className="text-yellow-400"/>} description="Ver lista de usuarios y sus roles." onClick={() => handleNotImplemented("Gestión de Usuarios")} />
-            <AdminActionCard title="Permisos de Admin" icon={<Shield className="text-red-400"/>} description="Asignar permisos temporales a otros administradores." onClick={() => handleNotImplemented("Asignar Permisos Admin")} />
-            <AdminActionCard title="Configuración de la Tienda" icon={<Settings className="text-teal-400"/>} description="Ajusta detalles de la tienda, envíos y pagos." onClick={() => handleNotImplemented("Configuración de Tienda")} />
-             <AdminActionCard title="Notificaciones y Alertas" icon={<Bell className="text-indigo-400"/>} description="Configurar alertas de stock bajo o nuevos pedidos." onClick={() => handleNotImplemented("Notificaciones y Alertas")} />
+            <AdminActionCard title="Ver Pedidos" icon={<List className="text-primary"/>} description="Revisa y gestiona los pedidos de los clientes." onClick={() => handleNotImplementedYet("Gestión de Pedidos")} />
+            <AdminActionCard title="Gestión de Usuarios" icon={<Users className="text-yellow-400"/>} description="Ver lista de usuarios y sus roles." onClick={() => handleNotImplementedYet("Gestión de Usuarios")} />
+            <AdminActionCard title="Permisos de Admin" icon={<Shield className="text-red-400"/>} description="Asignar permisos temporales a otros administradores." onClick={() => handleNotImplementedYet("Asignar Permisos Admin")} />
+            <AdminActionCard title="Configuración de la Tienda" icon={<Settings className="text-teal-400"/>} description="Ajusta detalles de la tienda, envíos y pagos." onClick={() => handleNotImplementedYet("Configuración de Tienda")} />
+             <AdminActionCard title="Notificaciones y Alertas" icon={<Bell className="text-indigo-400"/>} description="Configurar alertas de stock bajo o nuevos pedidos." onClick={() => handleNotImplementedYet("Notificaciones y Alertas")} />
         </div>
       </div>
     </motion.div>
@@ -231,7 +247,7 @@ const StatCard = ({ icon, title, value, tooltip }) => (
             <p className="text-2xl font-bold text-foreground">{value}</p>
         </div>
         {tooltip && (
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block px-2 py-1 bg-gray-700 text-white text-xs rounded-md whitespace-nowrap z-50">
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block px-2 py-1 bg-background text-foreground text-xs rounded-md shadow-lg border border-border whitespace-nowrap z-50">
                 {tooltip}
             </div>
         )}

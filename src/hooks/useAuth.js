@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { auth, onAuthStateChanged, signOut as firebaseSignOut } from '@/firebase';
+import { auth, onAuthStateChanged, signOut as firebaseSignOut, firebaseInitializationError } from '@/firebase';
 import { toast } from '@/components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,8 +12,14 @@ export const useAuth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!auth || !auth.onAuthStateChanged) {
-      console.error("Firebase auth no está disponible. La autenticación no funcionará.");
+    if (firebaseInitializationError) {
+      console.error("Firebase auth no está disponible debido a error de inicialización:", firebaseInitializationError);
+      setIsLoading(false);
+      return;
+    }
+    
+    if (!auth || typeof auth.onAuthStateChanged !== 'function') {
+      console.error("Firebase auth no está disponible o onAuthStateChanged no es una función. La autenticación no funcionará.");
       setIsLoading(false);
       return;
     }
@@ -47,8 +53,8 @@ export const useAuth = () => {
   }, []);
 
   const logout = async () => {
-    if (!auth || !auth.signOut) {
-      toast({ title: "Error", description: "No se puede cerrar sesión, Firebase no está configurado.", variant: "destructive" });
+    if (firebaseInitializationError || !auth || typeof auth.signOut !== 'function') {
+      toast({ title: "Error", description: `No se puede cerrar sesión: ${firebaseInitializationError || 'Firebase no está configurado.'}`, variant: "destructive" });
       return;
     }
     try {
@@ -60,5 +66,5 @@ export const useAuth = () => {
     }
   };
 
-  return { user, isAdmin, isLoading, logout, JAYDEN_ADMIN_EMAIL };
+  return { user, isAdmin, isLoading, logout, JAYDEN_ADMIN_EMAIL, firebaseInitializationError };
 };

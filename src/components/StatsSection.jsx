@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Globe, TrendingUp, Zap, Edit3, ShieldCheck } from 'lucide-react';

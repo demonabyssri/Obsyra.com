@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from '@/components/ui/use-toast';
 // import { useProducts } from '@/hooks/useProducts'; // Podrías usarlo para actualizar stock

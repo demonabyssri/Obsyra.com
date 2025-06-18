@@ -15,7 +15,7 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "YOUR_FALLBACK_API_KEY",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
@@ -25,35 +25,54 @@ const firebaseConfig = {
 };
 
 let app;
-let auth;
+let authInstance;
 let db;
 let storage;
+let firebaseInitializationError = null;
 
-try {
-  if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_FALLBACK_API_KEY") {
-    console.error("Firebase API Key no está configurada. Verifica tus variables de entorno (VITE_FIREBASE_API_KEY).");
+if (!firebaseConfig.apiKey) {
+  firebaseInitializationError = "CRITICAL: Firebase API Key is missing. Ensure VITE_FIREBASE_API_KEY is set in your .env file and Vite is configured to read it.";
+  console.error(firebaseInitializationError);
+} else if (firebaseConfig.apiKey === "YOUR_FALLBACK_API_KEY") {
+  firebaseInitializationError = "CRITICAL: Firebase API Key is set to the fallback placeholder. Please provide a valid API Key in VITE_FIREBASE_API_KEY.";
+  console.error(firebaseInitializationError);
+}
+
+if (!firebaseInitializationError) {
+  try {
+    app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+    authInstance = getAuth(app);
+    db = getFirestore(app);
+    storage = getStorage(app);
+  } catch (error) {
+    console.error("Error inicializando Firebase:", error);
+    console.error("Configuración de Firebase utilizada:", firebaseConfig);
+    firebaseInitializationError = `Error inicializando Firebase: ${error.message}. Verifica tu configuración.`;
+    
+    app = null; 
+    authInstance = null;
+    db = null;
+    storage = null;
   }
-  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-  auth = getAuth(app);
-  db = getFirestore(app);
-  storage = getStorage(app);
-} catch (error) {
-  console.error("Error inicializando Firebase:", error);
-  console.error("Configuración de Firebase utilizada:", firebaseConfig);
-  
-  app = null; 
-  auth = { 
+}
+
+if (firebaseInitializationError) {
+  authInstance = { 
     onAuthStateChanged: () => () => {}, 
     currentUser: null,
-    app: { options: { apiKey: null } } 
+    app: { options: { apiKey: null } },
+    signInWithEmailAndPassword: () => Promise.reject(new Error(firebaseInitializationError)),
+    createUserWithEmailAndPassword: () => Promise.reject(new Error(firebaseInitializationError)),
+    sendPasswordResetEmail: () => Promise.reject(new Error(firebaseInitializationError)),
+    updateProfile: () => Promise.reject(new Error(firebaseInitializationError)),
+    signOut: () => Promise.reject(new Error(firebaseInitializationError)),
+    deleteUser: () => Promise.reject(new Error(firebaseInitializationError)),
   };
-  db = null;
-  storage = null;
 }
 
 
 export { 
-  auth, 
+  authInstance as auth, 
   db, 
   storage, 
   app, 
@@ -65,5 +84,6 @@ export {
   signOut,
   deleteUser,
   PhoneAuthProvider,
-  RecaptchaVerifier
+  RecaptchaVerifier,
+  firebaseInitializationError
 };

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, ChevronLeft } from 'lucide-react';
@@ -21,27 +20,35 @@ const TermsPage = () => {
       </Button>
       <div className="flex items-center mb-10">
         <FileText className="h-8 w-8 text-primary mr-3" />
-        <h1 className="text-3xl sm:text-4xl font-bold text-foreground">Términos y Condiciones</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-foreground">Términos y Condiciones Generales</h1>
       </div>
       <div className="bg-card p-6 sm:p-8 rounded-xl shadow-lg border border-border text-muted-foreground space-y-4">
-        <p>Bienvenido a {storeName}. Estos términos y condiciones describen las reglas y regulaciones para el uso del sitio web de {storeName}.</p>
-        <p>Al acceder a este sitio web, asumimos que aceptas estos términos y condiciones en su totalidad. No continúes usando el sitio web de {storeName} si no aceptas todos los términos y condiciones establecidos en esta página.</p>
+        <p>Le damos la bienvenida a {storeName}. El uso de este sitio web está sujeto a los siguientes términos y condiciones.</p>
+        <p>Al acceder y utilizar los servicios de {storeName}, usted acepta y se compromete a cumplir con la totalidad de los términos aquí expuestos. Si no está de acuerdo con alguno de estos términos, le solicitamos que no utilice nuestro sitio web.</p>
         
-        <h2 className="text-xl font-semibold text-foreground pt-4">Licencia</h2>
-        <p>A menos que se indique lo contrario, {storeName} y/o sus licenciantes poseen los derechos de propiedad intelectual de todo el material en {storeName}. Todos los derechos de propiedad intelectual son reservados. Puedes ver y/o imprimir páginas desde {storeName.toLowerCase()}.com (o el dominio aplicable) para tu propio uso personal sujeto a las restricciones establecidas en estos términos y condiciones.</p>
-        <p>No debes:</p>
+        <h2 className="text-xl font-semibold text-foreground pt-4">Modelo de Negocio y Procedencia de Productos</h2>
+        <p>{storeName} funciona como una plataforma de reventa digital. Los productos listados en este sitio no son fabricados ni despachados directamente por nuestra empresa. Provienen de una red de proveedores y tiendas externas. {storeName} actúa como un intermediario, facilitando la adquisición y gestión de estos productos bajo un marco legal y transparente.</p>
+        <p>Nuestro modelo no corresponde al dropshipping tradicional. Adquirimos productos de diversas plataformas para luego revenderlos en {storeName}, aplicando nuestros propios precios. Este proceso puede generar márgenes comerciales derivados de la gestión, adquisición y el servicio al cliente que proporcionamos.</p>
+        <p>Para una descripción detallada de nuestro modelo operativo y la relación con proveedores, le remitimos a nuestro <Link to="/aviso-legal-terceros" className="text-primary hover:underline">Aviso Legal y Modelo de Negocio</Link>.</p>
+
+        <h2 className="text-xl font-semibold text-foreground pt-4">Propiedad Intelectual y Licencia de Uso</h2>
+        <p>Salvo indicación contraria, {storeName} y/o sus licenciantes son titulares de los derechos de propiedad intelectual sobre todo el material publicado en {storeName}. Todos los derechos están reservados. Usted puede visualizar y/o imprimir contenido del sitio web de {storeName} para uso personal, sujeto a las restricciones aquí detalladas.</p>
+        <p>Queda estrictamente prohibido:</p>
         <ul className="list-disc list-inside pl-4 space-y-1">
-          <li>Republicar material de {storeName.toLowerCase()}.com</li>
-          <li>Vender, alquilar o sublicenciar material de {storeName.toLowerCase()}.com</li>
-          <li>Reproducir, duplicar o copiar material de {storeName.toLowerCase()}.com</li>
-          <li>Redistribuir contenido de {storeName} (a menos que el contenido se haga específicamente para la redistribución).</li>
+          <li>Republicar material proveniente del sitio web de {storeName}.</li>
+          <li>Comercializar, alquilar o sublicenciar material del sitio web de {storeName}.</li>
+          <li>Reproducir, duplicar o copiar material del sitio web de {storeName}.</li>
+          <li>Redistribuir contenido de {storeName} (a menos que dicho contenido esté explícitamente destinado para la redistribución).</li>
         </ul>
 
-        <h2 className="text-xl font-semibold text-foreground pt-4">Descargo de Responsabilidad</h2>
-        <p>La información proporcionada por {storeName} ("nosotros", "nos" o "nuestro") en {storeName.toLowerCase()}.com (el "Sitio") es solo para fines informativos generales y de demostración. Aunque nos esforzamos por mantener la información actualizada y correcta, no hacemos ninguna representación o garantía de ningún tipo, expresa o implícita, con respecto a la exactitud, adecuación, validez, fiabilidad, disponibilidad o integridad de cualquier información en el Sitio.</p>
-        <p>{storeName} es una plataforma donde los administradores pueden listar productos de diversos proveedores. El proceso de compra final, pago y envío es gestionado por el administrador de la tienda utilizando las plataformas de los proveedores (ej. Temu, Amazon, AliExpress) y pasarelas de pago externas. Los datos de pago y envío ingresados por el cliente en {storeName} se utilizan para facilitar este proceso manual o semi-automatizado por el administrador.</p>
+        <h2 className="text-xl font-semibold text-foreground pt-4">Limitación de Responsabilidad sobre Productos</h2>
+        <p>{storeName}, en su rol de intermediario, no asume responsabilidad directa por defectos de fabricación o por las garantías de los productos, ya que estas son competencia del proveedor original. No obstante, gestionamos cada pedido con diligencia y le asistiremos en la comunicación con el proveedor ante cualquier incidencia. Nuestra responsabilidad se circunscribe a la gestión de la compra y al soporte al cliente en nombre del comprador.</p>
+        
+        <h2 className="text-xl font-semibold text-foreground pt-4">Exención General de Responsabilidad</h2>
+        <p>La información provista por {storeName} en este sitio se ofrece únicamente con fines informativos generales. Si bien nos esforzamos por mantener la información precisa y actualizada, no ofrecemos garantías de ningún tipo, expresas o implícitas, sobre la exactitud, adecuación, validez, fiabilidad, disponibilidad o integridad de la información contenida en el sitio.</p>
+        
         <p className="mt-6 text-center text-sm">
-          <Link to="/soporte" className="text-primary hover:underline">Contacta con nosotros</Link> si tienes alguna pregunta sobre estos términos.
+          Para consultas sobre estos términos, por favor <Link to="/soporte" className="text-primary hover:underline">contáctenos</Link>.
         </p>
       </div>
     </motion.div>
