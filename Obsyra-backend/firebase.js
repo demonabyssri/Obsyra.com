@@ -1,17 +1,17 @@
 const admin = require("firebase-admin");
 
 const serviceAccount = {
-  type: process.env.FIREBASE_TYPE,
-  project_id: process.env.FIREBASE_PROJECT_ID,
-  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-  private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-  client_email: process.env.FIREBASE_CLIENT_EMAIL,
-  client_id: process.env.FIREBASE_CLIENT_ID,
-  auth_uri: process.env.FIREBASE_AUTH_URI,
-  token_uri: process.env.FIREBASE_TOKEN_URI,
-  auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
-  client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
-  universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN
+  type: service_account,
+  project_id: obsyra-17dd4,
+  private_key_id: 5adccc117162a4d79e4b1ffc52e23ba364540bd8,
+  private_key: -----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCdyevzHpveSKH2\nVtDhI83PfIcu/l9Dr8CtE5RmcCbvW2RKuI2r3r5grJp6KJ3sBxp8T9pstjH8AdeG\nnVXl+qN9cTKJKl98AXizTYFdEGs55W/icECsfo49oYKiaNIDymsHkQuIEHes2Rs+\nnwtxmz+cu6lMiXTLWecS34ZvldNoaKd5gxN+xfhikbMBGIVn+zaCa8GwRyWyaB4a\nVbYnm58SGWNoMEy4xNpJ9EICcMV2g4xvsdGDECvk7CZYtFFWUG+XMyI8fMd4dD3A\nC+tatqOFoYfMCPcmUMECL9Vlnqt5LVJB36jkmOr/oVD2r0zYC3VsHmQmQ9hgKx9Q\nQ/AZeMFVAgMBAAECggEAP0at7em89Qeol7qZ+mdazhWwuoo81s6A1IeREAFyw7Mh\nRYu8GIvzSZ5+NnXaWsBAgVCeldD8u4Rbk3q960O3U4NVEkehUf/fEPyIX7NJZMbb\nNvHwJZx82z9NPWcOrYF7qWWju7Vq4LCR6etq8eyhtm9VRcGryi6r6VglN9NcG7aX\nAZVsqN7WdHC8+714Bg8PpzE6Bg1ahbfZbJZmpTPb4vFe/i2vUPAA4aQQDa9z1Upa\n5HN2HxA88QVojj0J1XmniqT9sJpFs9mTdQtbHwIVMxv3FyQ2KPDQyJERLpqbq9TO\ndDlMRXqbnbEg5EaRR/d7T0Ly/HHeRIl4FTi+HEIZcwKBgQDQU3GLvdQEzXQ7yWq5\nYzsJ3Meb91RfHxF2NA84IH9qRj4DWlouefWgftqb5DOIOfXh5ZBycffu6XRqZzXu\nPSDMe4gPvxZiGxsxil+DL5kJswMGVJ2Dhn8Sl5J8aLZZuRmlTg3C9DLuKpN6b6n6\nGGNRQp3DXstshLu9b/ttMv2vIwKBgQDB5c9PiYuCpWyL1rhzYMPq6hSZ/o+3jMFK\nazBVtwRtp5g+NGSomxb1PejOoxFvZNRNy6NPvVN7JlVFVZkOcSAKyPvr7O+naQO0\n3Ruomrtznix1st0+jjaHheUYWhWJrpPyr4zBAme9clbpb17sJQ4Kcv5TC2xCC9HV\n0BYPoQNRJwKBgQCAScJ0kZOM2ZCoeKKWQ3tJ2YG6lBaK9TDln613nNuZ8GOj4PIE\nCOqvyS6KLX9mdnrqf1nygCh0IaOlGqXlbhNSmQfy2nPIOnUGjvW+bYNKq8hDD7xo\nEF0Ub+6vWjRhEFGwsF5dHdB3RhTHoxgDgR04H1PTyf5vd1W9lMY6OtpqDQKBgQCc\nI9qwuxt8RohFh9CbINZECuIyLBtBfPh+XBjdPXc0clyX4wsX92QicwtRs2Er6e9J\nAm5tnRFnvzO1lLufNJvP849iqjdHAbr5X4CRYqEG9t3onfOqF010Du+wj4J+j/YV\n3SYkmzI9DaFNc+DlmuVWpsmEyFMSUIBWhK3vQgLwywKBgEuBmGOZ/ctmprjvIGLj\nKpTUQM4/B2Pg1160Awz1YVFkqjF7nOYWg+sXpCu7WZBbOyd8iq21fdyyUIkvDssG\nD5dBkRs/Z4fpaLJ+vi+UHCfOZYGz4XjBmcHfvR/f9zVU6I9mhRYhA2xz0ByZcKoI\nsuPMHChWA9WxGYhb2KTsvuUp\n-----END PRIVATE KEY-----\n"
+  client_email:firebase-adminsdk-fbsvc@obsyra-17dd4.iam.gserviceaccount.com,
+  client_id: 118407389217208704333,
+  auth_uri: https://accounts.google.com/o/oauth2/auth,
+  token_uri:https://oauth2.googleapis.com/token,
+  auth_provider_x509_cert_url: https://www.googleapis.com/oauth2/v1/certs,
+  client_x509_cert_url: https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40obsyra-17dd4.iam.gserviceaccount.comprocess.env.FIREBASE_UNIVERSE_DOMAIN
+  universe_domain: googleapis.com
 };
 
 admin.initializeApp({
