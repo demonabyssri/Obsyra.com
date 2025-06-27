@@ -1,23 +1,15 @@
 // Obsyra-backend/src/config/firebase.js
 const admin = require('firebase-admin');
 
-let serviceAccountJson; // Nombre más claro: Contendrá el OBJETO JSON parseado
-
-// Elimina el console.log de diagnóstico aquí.
-// console.log("Valor de FIREBASE_SERVICE_ACCOUNT_KEY en Render:", process.env.FIREBASE_SERVICE_ACCOUNT_KEY ? "CONFIGURADO (longitud: " + process.env.FIREBASE_SERVICE_ACCOUNT_KEY.length + ")" : "NO CONFIGURADO (valor vacío)");
-
-if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) { 
-    serviceAccountJson = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
-    // serviceAccountJson AHORA es un objeto JavaScript (el resultado de JSON.parse)
-} else {
-    throw new Error("FIREBASE_SERVICE_ACCOUNT_KEY no está configurado. Es necesario para el Admin SDK.");
-}
+// >>> ¡CAMBIO CRÍTICO AQUÍ! <<<
+// Render monta los Secret Files en /etc/secrets/
+// El nombre del archivo debe coincidir exactamente con el "Name" que le diste en Render (Paso 2.3)
+const serviceAccount = require('/etc/secrets/firebase_adminsdk.json'); 
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+// Si en Render le pusiste otro nombre al Secret File, cambia 'firebase_adminsdk.json' a ese nombre.
 
 admin.initializeApp({
-    // >>> ¡ESTA ES LA LÍNEA CLAVE! <<<
-    // Pasamos el OBJETO JavaScript parseado directamente al método .cert()
-    credential: admin.credential.cert(serviceAccountJson), 
-    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    credential: admin.credential.cert(serviceAccount), // serviceAccount ahora ya es el objeto JS correcto
     databaseURL: process.env.FIREBASE_DATABASE_URL 
 });
 
