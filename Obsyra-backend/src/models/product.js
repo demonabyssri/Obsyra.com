@@ -1,3 +1,4 @@
+// Obsyra-backend/src/models/product.js
 const { db } = require('../config/firebase');
 
 const productsCollection = db.collection('products');

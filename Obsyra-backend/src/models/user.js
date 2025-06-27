@@ -1,3 +1,4 @@
+// Obsyra-backend/src/models/user.js
 const { db } = require('../config/firebase');
 
 const usersCollection = db.collection('users');

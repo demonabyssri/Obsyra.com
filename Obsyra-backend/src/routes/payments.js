@@ -1,3 +1,4 @@
+// Obsyra-backend/src/routes/payments.js
 const express = require('express');
 const router = express.Router();
 const paymentService = require('../services/paymentService');
@@ -6,7 +7,7 @@ const stripe = require('../config/stripe');
 
 router.post('/create-checkout-session', authenticateToken, paymentService.createCheckoutSession);
 
-// ESTA ES LA RUTA DEL WEBHOOK DE STRIPE (IMPORTANTE: el middleware express.raw() ya está en app.js para esta ruta)
+// ESTA ES LA RUTA DEL WEBHOOK DE STRIPE (express.raw() ya está en app.js para esta ruta)
 router.post('/webhook', (req, res) => {
     const sig = req.headers['stripe-signature'];
     let event;

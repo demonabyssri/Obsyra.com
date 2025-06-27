@@ -1,3 +1,4 @@
+// Obsyra-backend/src/services/pdfService.js
 const PDFDocument = require('pdfkit');
 
 const generateInvoicePdf = async (orderData, userData) => {
@@ -37,9 +38,9 @@ const generateInvoicePdf = async (orderData, userData) => {
                                 .text('Total', totalX, tableTop);
 
         doc.font('Helvetica').lineCap('butt')
-        .moveTo(itemX, tableTop + 20)
-        .lineTo(doc.page.width - 50, tableTop + 20)
-        .stroke();
+           .moveTo(itemX, tableTop + 20)
+           .lineTo(doc.page.width - 50, tableTop + 20)
+           .stroke();
 
         let currentY = tableTop + 35;
 
@@ -53,9 +54,9 @@ const generateInvoicePdf = async (orderData, userData) => {
         doc.moveDown();
 
         doc.lineCap('butt')
-        .moveTo(itemX, currentY)
-        .lineTo(doc.page.width - 50, currentY)
-        .stroke();
+           .moveTo(itemX, currentY)
+           .lineTo(doc.page.width - 50, currentY)
+           .stroke();
         doc.moveDown();
 
         doc.fontSize(16).text(`Total General: $${orderData.totalAmount ? orderData.totalAmount.toFixed(2) : '0.00'}`, { align: 'right' });

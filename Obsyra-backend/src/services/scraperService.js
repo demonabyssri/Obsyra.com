@@ -1,3 +1,4 @@
+// Obsyra-backend/src/services/scraperService.js
 const puppeteer = require('puppeteer');
 const { db } = require('../config/firebase');
 const productModel = require('../models/product'); 
@@ -11,16 +12,19 @@ const scrapeProduct = async (url) => {
 
         let productData = {};
         if (url.includes('temu.com')) {
+            // Lógica de scraping para Temu
             productData = await page.evaluate(() => {
                 const title = document.querySelector('h1.product-title')?.innerText.trim();
                 const priceMatch = document.querySelector('.product-price-value')?.innerText.match(/[\d,.]+/);
                 const price = priceMatch ? parseFloat(priceMatch[0].replace(',', '.')) : null; 
                 const image = document.querySelector('.product-image-container img')?.src;
+                // Valores por defecto si no se pueden extraer
                 const stock = 999; 
-                const category = 'General'; // Considera cómo obtener la categoría real
+                const category = 'General'; 
                 return { name: title, price: price, sellingPrice: price, images: [image].filter(Boolean), stock, description: `Producto scrapeado de Temu: ${title}`, category, source: 'Temu' };
             });
         } else if (url.includes('amazon.com')) {
+            // Lógica de scraping para Amazon
             productData = await page.evaluate(() => {
                 const title = document.getElementById('productTitle')?.innerText.trim();
                 const priceMatch = document.querySelector('.a-price .a-offscreen')?.innerText.match(/[\d,.]+/);
@@ -31,6 +35,7 @@ const scrapeProduct = async (url) => {
                 return { name: title, price: price, sellingPrice: price, images: [image].filter(Boolean), stock, description: `Producto scrapeado de Amazon: ${title}`, category, source: 'Amazon' };
             });
         } else if (url.includes('aliexpress.com')) {
+            // Lógica de scraping para AliExpress
             productData = await page.evaluate(() => {
                 const title = document.querySelector('.Product_Name__container__110gP')?.innerText.trim();
                 const priceElement = document.querySelector('.Product_Price__content__147q4');
@@ -49,7 +54,7 @@ const scrapeProduct = async (url) => {
         }
 
         if (!productData.name || !productData.price) {
-            throw new Error('No se pudo extraer el nombre o precio del producto.');
+            throw new Error('No se pudo extraer el nombre o precio del producto. Asegúrate de que la URL sea correcta y la estructura de la página no haya cambiado.');
         }
 
         return productData;
@@ -74,8 +79,9 @@ const startScraping = async (req, res, next) => {
     const scrapedResults = [];
     for (const url of productUrls) {
         try {
-            const data = await scrapeProduct(url);
+            const data = await scrapeProduct(url); // Llama a tu función scrapeProduct
             
+            // Guarda el producto en Firebase después de scrapearlo
             const newProduct = await productModel.createProduct(data);
 
             scrapedResults.push({ url, data: newProduct, status: 'success', message: 'Producto scrapeado y guardado.' });

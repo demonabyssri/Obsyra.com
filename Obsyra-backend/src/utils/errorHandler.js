@@ -1,3 +1,4 @@
+// Obsyra-backend/src/utils/errorHandler.js
 const errorHandler = (err, req, res, next) => {
     const statusCode = err.statusCode || 500;
     const message = err.message || 'Error interno del servidor';

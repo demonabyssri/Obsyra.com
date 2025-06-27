@@ -1,3 +1,4 @@
+// Obsyra-backend/src/services/authService.js
 const { auth, db } = require('../config/firebase');
 const userModel = require('../models/user');
 const speakeasy = require('speakeasy');

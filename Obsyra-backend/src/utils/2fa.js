@@ -1,3 +1,4 @@
+// Obsyra-backend/src/utils/2fa.js
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 

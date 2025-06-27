@@ -1,7 +1,8 @@
-const transporter = require('../config/mail'); 
+// Obsyra-backend/src/services/emailService.js
+const sendMail = require('../config/mail'); // Importa la función de envío de SendGrid
 
 const sendOrderConfirmation = async (toEmail, orderDetails, invoicePdfBuffer) => {
-    const mailOptions = {
+    const msg = {
         from: process.env.EMAIL_FROM,
         to: toEmail,
         subject: `Confirmación de Pedido #${orderDetails.orderId} de tu Tienda`,
@@ -17,15 +18,17 @@ const sendOrderConfirmation = async (toEmail, orderDetails, invoicePdfBuffer) =>
         `,
         attachments: [
             {
+                content: invoicePdfBuffer.toString('base64'), // SendGrid espera base64
                 filename: `factura-${orderDetails.orderId}.pdf`,
-                content: invoicePdfBuffer,
-                contentType: 'application/pdf'
+                type: 'application/pdf',
+                disposition: 'attachment',
+                content_id: 'invoice_pdf'
             }
         ]
     };
 
     try {
-        await transporter.sendMail(mailOptions);
+        await sendMail(msg);
         console.log(`Correo de confirmación enviado a ${toEmail} para el pedido ${orderDetails.orderId}`);
     } catch (error) {
         console.error(`Error al enviar correo de confirmación a ${toEmail}:`, error);
@@ -33,7 +36,7 @@ const sendOrderConfirmation = async (toEmail, orderDetails, invoicePdfBuffer) =>
 };
 
 const sendPasswordResetEmail = async (toEmail, resetLink) => {
-    const mailOptions = {
+    const msg = {
         from: process.env.EMAIL_FROM,
         to: toEmail,
         subject: 'Restablecimiento de Contraseña para tu Tienda',
@@ -50,11 +53,11 @@ const sendPasswordResetEmail = async (toEmail, resetLink) => {
     };
 
     try {
-        await transporter.sendMail(mailOptions);
+        await sendMail(msg);
         console.log(`Correo de restablecimiento enviado a ${toEmail}`);
     } catch (error) {
         console.error(`Error al enviar correo de restablecimiento a ${toEmail}:`, error);
     }
 };
 
-module.exports = { sendOrderConfirmation, sendPasswordResetEmail };
+module.exports = { sendOrderConfirmation, sendPasswordResetEmail };;

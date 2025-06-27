@@ -1,10 +1,11 @@
+// Obsyra-backend/src/services/paymentService.js
 const stripe = require('../config/stripe');
 const { db } = require('../config/firebase');
 const orderModel = require('../models/order');
 const userModel = require('../models/user');
 const emailService = require('./emailService');
 const pdfService = require('./pdfService');
-const productService = require('./productService'); // Para actualizar stock
+const productService = require('./productService'); 
 
 const createCheckoutSession = async (req, res, next) => {
     const { items } = req.body; 
@@ -15,10 +16,11 @@ const createCheckoutSession = async (req, res, next) => {
     }
 
     try {
+        // Validar stock antes de crear la sesión de Stripe (usando una transacción)
         const productRefs = {};
         for (const item of items) {
             const productRef = db.collection('products').doc(item.productId);
-            productRefs[item.productId] = productRef;
+            productRefs[item.productId] = productRef; 
         }
 
         await db.runTransaction(async (transaction) => {
@@ -31,6 +33,7 @@ const createCheckoutSession = async (req, res, next) => {
                 if (product.stock < item.quantity) {
                     throw new Error(`Stock insuficiente para el producto ${product.name}. Disponibles: ${product.stock}, Pedidos: ${item.quantity}`);
                 }
+                // Aquí solo validamos, la deducción real del stock ocurre en el webhook
             }
         });
 
@@ -46,7 +49,7 @@ const createCheckoutSession = async (req, res, next) => {
         }));
 
         const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card'],
+            payment_method_types: ['card'], 
             line_items: lineItems,
             mode: 'payment',
             success_url: `${process.env.FRONTEND_URL}/checkout?session_id={CHECKOUT_SESSION_ID}`,
@@ -95,12 +98,13 @@ const handleWebhookEvent = async (event) => {
                 };
                 batch.set(orderRef, orderData);
 
+                // Deducir stock para cada ítem del pedido
                 for (const item of orderItems) {
                     const productRef = db.collection('products').doc(item.productId);
                     const productDoc = await productRef.get();
                     if (!productDoc.exists) {
-                        console.warn(`Producto ${item.productId} no encontrado al deducir stock para pedido ${orderRef.id}.`);
-                        continue; 
+                         console.warn(`Producto ${item.productId} no encontrado al deducir stock para pedido ${orderRef.id}.`);
+                         continue; 
                     }
                     const currentStock = productDoc.data().stock;
                     const newStock = currentStock - item.quantity;

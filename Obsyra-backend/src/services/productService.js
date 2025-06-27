@@ -1,3 +1,4 @@
+// Obsyra-backend/src/services/productService.js
 const productModel = require('../models/product');
 const { db } = require('../config/firebase');
 

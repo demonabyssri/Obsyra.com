@@ -1,3 +1,4 @@
+// Obsyra-backend/src/middleware/auth.js
 const { auth } = require('../config/firebase');
 
 const authenticateToken = async (req, res, next) => {
@@ -9,8 +10,9 @@ const authenticateToken = async (req, res, next) => {
     }
 
     try {
+        // Verificar token de Firebase ID (viene del frontend)
         const decodedToken = await auth.verifyIdToken(token);
-        req.user = decodedToken; 
+        req.user = decodedToken; // El usuario autenticado está disponible en req.user
         next();
     } catch (error) {
         console.error('Error al verificar token:', error);
@@ -20,10 +22,9 @@ const authenticateToken = async (req, res, next) => {
 
 const authorizeRoles = (roles = []) => {
     return (req, res, next) => {
-        if (!req.user || !req.user.role) { 
-            return res.status(403).json({ message: 'No autorizado. Rol de usuario no encontrado.' });
-        }
-        if (!roles.includes(req.user.role)) {
+        // Asegúrate de que el rol se establezca en los custom claims de Firebase Auth
+        // Ej: await admin.auth().setCustomUserClaims(uid, { role: 'admin' });
+        if (!req.user || !req.user.role || !roles.includes(req.user.role)) {
             return res.status(403).json({ message: 'Acceso denegado. No tienes los permisos necesarios.' });
         }
         next();
