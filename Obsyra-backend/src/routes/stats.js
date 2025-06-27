@@ -1,20 +1,11 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { db } = require("../firebase");
+// const statsService = require('../services/statsService'); // Si creas un servicio
+const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 
-router.get("/", async (req, res) => {
-  const users = await db.collection("users").get();
-  const orders = await db.collection("orders").get();
-
-  const totalUsers = users.size;
-  const totalOrders = orders.size;
-
-  let totalRevenue = 0;
-  orders.forEach(doc => {
-    totalRevenue += doc.data().total || 0;
-  });
-
-  res.json({ totalUsers, totalOrders, totalRevenue });
+router.get('/', authenticateToken, authorizeRoles(['admin']), (req, res) => {
+    // Lógica de estadísticas aquí o en statsService
+    res.json({ message: "Endpoint de estadísticas", data: "Tu data de stats aquí" });
 });
 
 module.exports = router;
