@@ -2,19 +2,20 @@
 const admin = require('firebase-admin');
 
 let serviceAccount;
-// Esta línea intenta LEER la variable de entorno.
-// Si Render no tiene esta variable configurada, esta condición será falsa.
+
+// >>> LÍNEA DE DIAGNÓSTICO <<<
+console.log("Valor de FIREBASE_SERVICE_ACCOUNT_KEY en Render:", process.env.FIREBASE_SERVICE_ACCOUNT_KEY ? "CONFIGURADO (longitud: " + process.env.FIREBASE_SERVICE_ACCOUNT_KEY.length + ")" : "NO CONFIGURADO (valor vacío)");
+// >>> FIN LÍNEA DE DIAGNÓSTICO <<<
+
 if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) { 
-    // Si la variable existe, entonces se parsea su contenido.
     serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
 } else {
-    // Si la variable NO EXISTE en el entorno de Render, se lanza este error.
     throw new Error("FIREBASE_SERVICE_ACCOUNT_KEY no está configurado. Es necesario para el Admin SDK.");
 }
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: process.env.FIREBASE_DATABASE_URL // También lee de las variables de entorno
+    databaseURL: process.env.FIREBASE_DATABASE_URL 
 });
 
 const db = admin.firestore();
