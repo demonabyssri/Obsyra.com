@@ -1,29 +1,26 @@
-// Obsyra-backend/src/app.js
+// Obsyra-backend/src/app.js - VERSIÓN LIMPIA Y CORREGIDA
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
-// Importar todas las rutas desde src/routes/
+// Importar SOLO las rutas esenciales que hemos creado y configurado
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const paymentRoutes = require('./routes/payments');
-// ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
-// ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡ EL ESPACIO INVISIBLE ESTABA AQUÍ ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
-// VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV (justo después de la primera comilla simple)
 const scrapingRoutes = require('./routes/scraping'); // ¡ARREGLADO! SIN ESPACIO.
-// ¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡¡
 const adminRoutes = require('./routes/admin');
 
-// Rutas adicionales del "server.js" antiguo:
-// IMPORTANTE: Asegúrate de que estos archivos EXISTAN en Obsyra-backend/src/routes/
-// Si no existen, Node.js dará "Cannot find module" para ellos.
-// Si no los necesitas, ELIMINA la línea de 'require' y la línea de 'app.use' de abajo.
-const phantomOrdersRoute = require('./routes/phantom-orders'); 
-const statsRoute = require('./routes/stats'); 
-const configRoute = require('./routes/config'); 
-const extractRoute = require('./routes/extract'); 
+// -------------------------------------------------------------
+// RUTAS ANTIGUAS/ADICIONALES: ELIMINADAS O COMENTADAS POR AHORA
+// Para evitar "Cannot find module" si no existen esos archivos.
+// Si NECESITAS estas rutas y tienes sus archivos correspondientes en src/routes/,
+// DEBES DESCOMENTARLAS y ASEGURARTE de que los archivos existan y funcionen.
+// Por ejemplo:
+// const statsRoute = require('./routes/stats');
+// const configRoute = require('./routes/config');
+// -------------------------------------------------------------
 
 const errorHandler = require('./utils/errorHandler');
 
@@ -32,10 +29,10 @@ const app = express();
 // Middlewares globales
 app.use(cors({
   origin: [
-    process.env.FRONTEND_URL, 
-    "https://phantom-deals.netlify.app", 
-    "https://phantom-deals.web.app"
-  ].filter(Boolean), 
+    process.env.FRONTEND_URL,          // Tu URL principal del .env (para Render)
+    "https://Obsyra.netlify.app",      // Si tu frontend está en Netlify con este dominio
+    "https://Obsyra.web.app"           // Si tu frontend está en Firebase Hosting con este dominio
+  ].filter(Boolean), // Filtra cualquier valor null/undefined del array
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -48,22 +45,21 @@ app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 // Middleware para procesar JSON
 app.use(express.json());
 
-// Montar TODAS las rutas
+// Montar TODAS las rutas (solo las esenciales y configuradas)
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes); // Ruta de órdenes general (mi estructura)
+app.use('/api/orders', orderRoutes); // Ruta de órdenes general (de mi estructura)
 app.use('/api/payments', paymentRoutes);
-app.use('/api/scrape', scrapingRoutes); 
+app.use('/api/scrape', scrapingRoutes); // Ruta de scraping principal
 app.use('/api/admin', adminRoutes);
 
-// Montar rutas adicionales (CONFLICTO DE RUTA /api/orders)
-// SI LAS DOS RUTAS "/api/orders" HACEN COSAS DIFERENTES, PUEDES TENER PROBLEMAS.
-// LO IDEAL ES FUSIONARLAS EN UN SOLO src/routes/orders.js y src/services/orderService.js
-// Por ahora, si 'phantomOrdersRoute' tiene más prioridad o es la que quieres, déjala.
-app.use("/api/orders-old", phantomOrdersRoute); // ¡SUGERENCIA: Renombrada para evitar conflicto!
-app.use("/api/stats", statsRoute);
-app.use("/api/config", configRoute);
-app.use("/api/extract", extractRoute); 
+// -------------------------------------------------------------
+// Montar rutas adicionales (CONFLICTOS Y REDUNDANCIAS EVITADAS)
+// Si uncommentas alguna de las 'require' de arriba, también debes descomentar su 'app.use' aquí.
+// Ejemplo:
+// app.use("/api/stats", statsRoute);
+// app.use("/api/config", configRoute);
+// -------------------------------------------------------------
 
 // Ruta raíz para verificar que la API funciona
 app.get("/", (req, res) => {
