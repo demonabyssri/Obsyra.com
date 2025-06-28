@@ -1,9 +1,8 @@
 // Obsyra-backend/src/config/mail.js
-const sgMail = require('@sendgrid/mail');
+const sgMail = require('@sendgrid/mail'); // Importa el SDK oficial de SendGrid
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+sgMail.setApiKey(process.env.SENDGRID_API_KEY); // Lee la clave de las variables de entorno
 
-// Esta función es un wrapper para enviar correos usando el SDK de SendGrid
 const sendMail = async (msg) => {
     try {
         await sgMail.send(msg);
@@ -13,7 +12,7 @@ const sendMail = async (msg) => {
         if (error.response && error.response.body.errors) {
             console.error('Errores de SendGrid:', error.response.body.errors);
         }
-        throw error; // Re-lanza el error para que sea capturado por el errorHandler
+        throw error; 
     }
 };
 

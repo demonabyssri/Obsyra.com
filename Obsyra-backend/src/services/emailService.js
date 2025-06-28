@@ -3,7 +3,7 @@ const sendMail = require('../config/mail'); // Importa la función de envío de 
 
 const sendOrderConfirmation = async (toEmail, orderDetails, invoicePdfBuffer) => {
     const msg = {
-        from: process.env.EMAIL_FROM,
+        from: process.env.EMAIL_FROM, // Lee el remitente de las variables de entorno
         to: toEmail,
         subject: `Confirmación de Pedido #${orderDetails.orderId} de tu Tienda`,
         html: `
@@ -18,7 +18,7 @@ const sendOrderConfirmation = async (toEmail, orderDetails, invoicePdfBuffer) =>
         `,
         attachments: [
             {
-                content: invoicePdfBuffer.toString('base64'), // SendGrid espera base64
+                content: invoicePdfBuffer.toString('base64'), 
                 filename: `factura-${orderDetails.orderId}.pdf`,
                 type: 'application/pdf',
                 disposition: 'attachment',
@@ -60,4 +60,4 @@ const sendPasswordResetEmail = async (toEmail, resetLink) => {
     }
 };
 
-module.exports = { sendOrderConfirmation, sendPasswordResetEmail };;
+module.exports = { sendOrderConfirmation, sendPasswordResetEmail };
